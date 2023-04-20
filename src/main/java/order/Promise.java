@@ -8,9 +8,11 @@ import java.io.Serializable;
 public class Promise implements Serializable {
 
     private String status;
+    private Proposal proposal;
 
-    public Promise(String status) {
+    public Promise(String status, Proposal proposal) {
         this.status = status;
+        this.proposal = proposal;
     }
     public String getStatus() {
         return status;
