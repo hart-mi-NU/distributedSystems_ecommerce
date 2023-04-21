@@ -10,13 +10,14 @@ import java.rmi.server.ServerNotActiveException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.*;
 
 /**
  * This class is basically a server that stores the order data in a in-memory map.
  */
 public class OrderStoreManagerImpl extends
-        java.rmi.server.UnicastRemoteObject implements OrderStoreManager, PaxosServer {
+        java.rmi.server.UnicastRemoteObject implements PaxosServer {
 
     private static int proposalId = 1;
 
@@ -76,6 +77,19 @@ public class OrderStoreManagerImpl extends
         System.out.println(Helper.logWithTimestamp("Server:" + serverIP + " " + serverPort + " "+ String.format("Client: %s Response:%s\n", clientHost, result)));
 
         return result;
+    }
+
+    @Override
+    public Result getOrders(Integer userId) {
+        List<List<Integer>> orders = new ArrayList<>();
+
+        for(Integer key: this.keyValueStore.keySet()) {
+            List<List<List<Integer>>> value = this.keyValueStore.get(key);
+            if (Objects.equals(value.get(0).get(0).get(0), userId)) {
+                orders.addAll(value.get(1));
+            }
+        }
+        return new Result("getOrders", orders, "Success");
     }
 
     private OrderCoordinator getCoordinator() {

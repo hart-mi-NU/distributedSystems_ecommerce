@@ -36,6 +36,15 @@ public interface OrderCoordinator extends Remote {
     Result createOrder(Integer userId, List<List<Integer>> itemIds) throws RemoteException;
 
     /**
+     * Used to get orders of the current user.
+     *
+     * @param userId  user who is placing the order
+     * @return result after executing the operation
+     * @throws RemoteException
+     */
+    Result getOrders(Integer userId) throws RemoteException;
+
+    /**
      * Used to start the execution of the proposal across the servers.
      *
      * @param proposal the proposal to send to the acceptors.

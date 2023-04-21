@@ -27,12 +27,20 @@ public class DummyClient {
 
         Result result = storeManager.createOrder(1, itemsWithQuantity);
 
-        System.out.println("Result: " + result);
+        System.out.println("Result: " + result.getItemsInOrder());
 
-            // If the server gives unexpected response log it and continue with rest of the operations
+        // If the server gives unexpected response log it and continue with rest of the operations
         if (!Helper.isServerResponseValid(result.getOperation(), "createOrder")) {
             System.out.println(Helper.logWithTimestamp("received unsolicited response acknowledging unknown PUT/GET/DELETE with an invalid KEY"));
-//            continue;
+        }
+
+        Result result2 = storeManager.getOrders(1);
+
+        System.out.println("Result: " + result2.getItemsInOrder());
+
+        // If the server gives unexpected response log it and continue with rest of the operations
+        if (!Helper.isServerResponseValid(result2.getOperation(), "getOrders")) {
+            System.out.println(Helper.logWithTimestamp("received unsolicited response acknowledging unknown PUT/GET/DELETE with an invalid KEY"));
         }
 
         }

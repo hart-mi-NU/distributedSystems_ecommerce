@@ -13,4 +13,13 @@ public interface OrderStoreManager {
      * @throws RemoteException
      */
     Result createOrder(Integer orderId, Integer userId, List<List<Integer>> itemIds) throws RemoteException;
+
+    /**
+     * Used to get orders of the current user.
+     *
+     * @param userId  user who is placing the order
+     * @return result after executing the operation
+     * @throws RemoteException
+     */
+    Result getOrders(Integer userId);
 }

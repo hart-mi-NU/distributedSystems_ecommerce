@@ -62,6 +62,11 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
     }
 
     @Override
+    public Result getOrders(Integer userId) throws RemoteException {
+        return servers.get(0).getOrders(userId);
+    }
+
+    @Override
     public Result execute(Proposal proposal) throws RemoteException {
         int majority = Math.floorDiv(servers.size(), 2) + 1;
         int promised = 0;
