@@ -19,7 +19,13 @@ public class DummyClient {
 
         System.out.println(Helper.logWithTimestamp("Sending create operation Order Store ..."));
 
-        Result result = storeManager.createOrder(1, new ArrayList<>(List.of(1, 2)));
+        List<List<Integer>> itemsWithQuantity = new ArrayList<>();
+        List<Integer> firstItem = new ArrayList<>(List.of(1,2));
+        List<Integer> secondItem = new ArrayList<>(List.of(2,1));
+        itemsWithQuantity.add(firstItem);
+        itemsWithQuantity.add(secondItem);
+
+        Result result = storeManager.createOrder(1, itemsWithQuantity);
 
         System.out.println("Result: " + result);
 

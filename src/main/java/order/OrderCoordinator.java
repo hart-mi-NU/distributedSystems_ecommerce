@@ -15,15 +15,15 @@ public interface OrderCoordinator extends Remote {
      * @return the result from the inventory service, true if item removed else false
      * @throws RemoteException
      */
-    Boolean removeItem(Integer itemId) throws RemoteException;
+    Boolean removeItem(Integer itemId, Integer stock) throws RemoteException;
 
     /**
      * Check if the item is in stock in the inventory
      * @param itemId id of the item to check for stock
-     * @return the result from the inventory service, true if item in stock else false
+     * @return the result from the inventory service, number of pieces in stock
      * @throws RemoteException
      */
-    Boolean inStock(Integer itemId) throws RemoteException;
+    int inStock(Integer itemId) throws RemoteException;
 
     /**
      * Used to create an order and run it in a PAXOS fashion.
@@ -33,7 +33,7 @@ public interface OrderCoordinator extends Remote {
      * @return result after executing the operation
      * @throws RemoteException
      */
-    Result createOrder(Integer userId, List<Integer> itemIds) throws RemoteException;
+    Result createOrder(Integer userId, List<List<Integer>> itemIds) throws RemoteException;
 
     /**
      * Used to start the execution of the proposal across the servers.

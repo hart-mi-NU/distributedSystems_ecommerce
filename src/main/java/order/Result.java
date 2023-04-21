@@ -5,20 +5,20 @@ import java.util.List;
 
 public class Result                                                                                                                                                                                     implements Serializable {
     private String operation;
-    private List<Integer> itemsInOrder;
+    private List<List<Integer>> itemsInOrder;
     private String message;
 
-    public Result(String operation, List<Integer> itemsInOrder, String message) {
+    public Result(String operation, List<List<Integer>> itemsInOrder, String message) {
         this.operation = operation;
         this.itemsInOrder = itemsInOrder;
         this.message = message;
     }
 
-    public List<Integer> getItemsInOrder() {
+    public List<List<Integer>> getItemsInOrder() {
         return itemsInOrder;
     }
 
-    public void setItemsInOrder(List<Integer> itemsInOrder) {
+    public void setItemsInOrder(List<List<Integer>> itemsInOrder) {
         this.itemsInOrder = itemsInOrder;
     }
 

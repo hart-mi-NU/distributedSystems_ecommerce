@@ -28,9 +28,9 @@ public class OrderStoreManagerImpl extends
     private final String coordinatorPort;
     private OrderCoordinator coordinator;
 
-    private final ConcurrentHashMap<Integer, List<List<Integer>>> keyValueStore;
+    private final ConcurrentHashMap<Integer, List<List<List<Integer>>>> keyValueStore;
 
-    public OrderStoreManagerImpl(String serverPort, String coordinatorIP, String coordinatorPort, ConcurrentHashMap<Integer, List<List<Integer>>> keyValueStore)
+    public OrderStoreManagerImpl(String serverPort, String coordinatorIP, String coordinatorPort, ConcurrentHashMap<Integer, List<List<List<Integer>>>> keyValueStore)
             throws RemoteException {
         super();
 
@@ -49,7 +49,7 @@ public class OrderStoreManagerImpl extends
     }
 
     @Override
-    public Result createOrder(Integer orderId, Integer userId, List<Integer> itemIds) throws RemoteException {
+    public Result createOrder(Integer orderId, Integer userId, List<List<Integer>> itemIds) throws RemoteException {
         String clientHost;
         try {
             clientHost = getClientHost();
@@ -164,23 +164,27 @@ public class OrderStoreManagerImpl extends
 
     @Override
     public Result learn(Proposal proposal) throws RemoteException {
-        System.out.println(Helper.logWithTimestamp("Recieved a learn message for proposal: " + proposal));
+        System.out.println(Helper.logWithTimestamp("Received a learn message for proposal: " + proposal));
 
         String operationType = proposal.getOperation();
         Integer orderIdToStore = proposal.getOrderId();
         Integer userIdToStore = proposal.getUserId();
-        List<Integer> itemIdsToAdd = proposal.getItemIds();
-        List<List<Integer>> valueToStore = new ArrayList<>();
+        List<List<Integer>> itemIdsToAdd = proposal.getItemIds();
+        List<List<List<Integer>>> valueToStore = new ArrayList<>();
         Result result;
         this.coordinator = getCoordinator();
 
         if (operationType.equals("createOrder")) {
-            valueToStore.add(Collections.singletonList(userIdToStore));
-            List<Integer> itemsInStock = new ArrayList<>();
-            for(Integer itemId: itemIdsToAdd) {
-                if(this.coordinator.inStock(itemId)) {
+            valueToStore.add(Collections.singletonList(Collections.singletonList(userIdToStore)));
+            List<List<Integer>> itemsInStock = new ArrayList<>();
+            for(List<Integer> itemId: itemIdsToAdd) {
+                int quantityInStock = this.coordinator.inStock(itemId.get(0));
+                if(quantityInStock >= itemId.get(1) ) {
                     itemsInStock.add(itemId);
-                    this.coordinator.removeItem(itemId);
+                    this.coordinator.removeItem(itemId.get(0), itemId.get(1));
+                } else {
+                    itemsInStock.add(List.of(itemId.get(0), itemId.get(1) - quantityInStock));
+                    this.coordinator.removeItem(itemId.get(0), quantityInStock);
                 }
             }
             valueToStore.add(itemsInStock);

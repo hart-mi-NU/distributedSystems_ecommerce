@@ -12,5 +12,5 @@ public interface OrderStoreManager {
      * @return result after executing the operation
      * @throws RemoteException
      */
-    Result createOrder(Integer orderId, Integer userId, List<Integer> itemIds) throws RemoteException;
+    Result createOrder(Integer orderId, Integer userId, List<List<Integer>> itemIds) throws RemoteException;
 }

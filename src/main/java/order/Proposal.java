@@ -13,9 +13,9 @@ public class Proposal implements Serializable {
     private String operation;
     private Integer orderId;
     private Integer userId;
-    private List<Integer> itemIds = new ArrayList<>();
+    private List<List<Integer>> itemIds = new ArrayList<>();
 
-    public Proposal(long id, String operation, Integer orderId, Integer userId, List<Integer> itemIds) {
+    public Proposal(long id, String operation, Integer orderId, Integer userId, List<List<Integer>> itemIds) {
         this.id = id;
         this.operation = operation;
         this.orderId = orderId;
@@ -47,7 +47,7 @@ public class Proposal implements Serializable {
 
     public Integer getUserId() { return this.userId;}
 
-    public List<Integer> getItemIds() {return this.itemIds;}
+    public List<List<Integer>> getItemIds() {return this.itemIds;}
 
     /**
      * Generate proposal.
@@ -57,7 +57,7 @@ public class Proposal implements Serializable {
      * @param itemIds id of items in the order
      * @return
      */
-    public static synchronized Proposal createProposal(String operation, Integer orderId, Integer userId, List<Integer> itemIds) {
+    public static synchronized Proposal createProposal(String operation, Integer orderId, Integer userId, List<List<Integer>> itemIds) {
         uniqueId += 1;
         return new Proposal(uniqueId, operation, orderId, userId, itemIds);
     }

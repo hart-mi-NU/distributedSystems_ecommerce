@@ -44,19 +44,19 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
     }
 
     @Override
-    public Boolean removeItem(Integer itemId) throws RemoteException {
+    public Boolean removeItem(Integer itemId, Integer stock) throws RemoteException {
         // TODO: contact inventory service
         return true;
     }
 
     @Override
-    public Boolean inStock(Integer itemId) throws RemoteException {
+    public int inStock(Integer itemId) throws RemoteException {
         // TODO: contact inventory service
-        return true;
+        return 100;
     }
 
     @Override
-    public Result createOrder(Integer userId, List<Integer> itemIds) throws RemoteException {
+    public Result createOrder(Integer userId, List<List<Integer>> itemIds) throws RemoteException {
         this.orderId += 1;
         return servers.get(0).createOrder(orderId, userId, itemIds);
     }

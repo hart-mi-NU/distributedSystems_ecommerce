@@ -16,7 +16,7 @@ public class OrderServerStarter {
             return;
         }
 
-        ConcurrentHashMap<Integer, List<List<Integer>>> hashMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Integer, List<List<List<Integer>>>> hashMap = new ConcurrentHashMap<>();
 
         try {
             PaxosServer paxosServer = new OrderStoreManagerImpl(args[0], args[1], args[2], hashMap);
