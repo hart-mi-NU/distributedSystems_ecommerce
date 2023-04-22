@@ -23,6 +23,7 @@ public class UserInterface {
 	
 	Registry registry;
 	MyLogger logger;
+	ShoppingCart shoppingCart;
 	
 	// References to a replica of each of the three servers
 	UserServerInterface userServer;
@@ -31,6 +32,7 @@ public class UserInterface {
 	
 	// Constructor
 	public UserInterface() {
+		
 		try {
 			this.logger = new MyLogger("userInterfaceLog.csv");
 
@@ -52,6 +54,8 @@ public class UserInterface {
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
 			// inventoryServer = (InventoryServer) registry.lookup("inventoryServer0");
+			this.shoppingCart = new ShoppingCart(inventoryServer);
+			
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.log(true, Level.SEVERE, "Unable to access rmi registry. Exiting...");
@@ -233,14 +237,13 @@ public class UserInterface {
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() {
-		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "cart", "checkout", "order-history" ));
+		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
 		// Print the options available to choose from
 		Scanner scanner = new Scanner(System.in);
 		
 		
 		Boolean isValidCommand;
-		// Listen for keyboard input
 		while (true) {
 			// Print instructions
 			System.out.println("** The following items are available for sale: **");
@@ -254,7 +257,8 @@ public class UserInterface {
 			System.out.println(" - \"add [id] [quantity]\"  --> Add a product to your shopping cart");
 			System.out.println(" - \"update [id] [quantity]\"  --> Update the quantity of product in your shopping cart");
 			System.out.println(" - \"remove [id]\" --> Remove a product from your shopping cart");
-			System.out.println(" - \"cart\"  --> View your shopping cart");
+			System.out.println(" - \"show-cart\"  --> View your shopping cart");
+			System.out.println(" - \"empty-cart\"  --> Empty your shopping cart");
 			System.out.println(" - \"checkout\"  --> checkout. Clears the shopping cart and removes products from available stock");
 			System.out.println(" - \"order-history\"  --> view your order history");
 
@@ -269,7 +273,7 @@ public class UserInterface {
 			String firstWord = wordList.get(0);
 
 			// Check for EXIT
-			if (firstWord.trim().toLowerCase().equals("exit") || userInput.trim().toLowerCase().equals("exit")) {
+			if (firstWord.trim().toLowerCase().equals("exit")) {
 				scanner.close();
 				this.logger.log(true, Level.INFO, "** Exiting!! **");
 				logger.close();
@@ -277,17 +281,12 @@ public class UserInterface {
 				break; // break the loop to exit program
 			}
 			
-			// Minimum response is 4 chars ("EXIT")
+			// Minimum response is 4 chars ("cart")
 			if (userInput.length() < 6) {
 				logger.log(true, Level.INFO, "Invalid command: \"" + userInput + "\"");
 				continue;
 			}
-			
-			// Check for 3 or more words
-			if (wordList.size() < 3) {
-				logger.log(true, Level.INFO, "Invalid input");
-				continue;
-			}
+
 
 			// Check if the command is valid
 			if (!validCommands.contains(firstWord.toLowerCase())) {
@@ -296,24 +295,26 @@ public class UserInterface {
 			}
 
 
-			// Respond to input
-			String username;
-			String password;
-			Request response = null;
-
+			// Respond to user input
+			Integer productId;
+			Integer quantity;
+			
 			// Switch statement on the first word in the wordlist
 			switch (wordList.get(0).toLowerCase()) {
 			case "add":
-				// make sure user entered both username and password
+				// make sure user entered enough arguments
 				if (userInput.trim().split(" ").length < 3) {
 					logger.log(true, Level.INFO,
-							"Invalid. Username and password required for SIGNUP request -> \"" + userInput + "\"");
+							"Invalid. Product id and quantity required to ADD to shopping cart:\"" + userInput + "\"");
 					break;
 				}
 
 				// Make request
-				wordList.remove(0); // remove first word ("signup")
-				password = wordList.get(wordList.size() - 1);
+				wordList.remove(0); // remove first word ("add")
+				quantity = Integer.valueOf(wordList.get(wordList.size() - 1));
+				
+				
+				
 				wordList.remove(wordList.size() - 1); // remove last word (the password)
 				username = String.join(" ", wordList);
 				response = makeRequest("signup", username, password);
