@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import order.OrderCoordinator;
 import userService.MyLogger;
 import userService.Request;
 import userService.SerializedFuture;
@@ -25,7 +26,7 @@ public class UserInterface {
 	
 	// References to a replica of each of the three servers
 	UserServerInterface userServer;
-//	 OrderCoordinator orderServer;		
+	OrderCoordinator orderServer;		
 	 // InventoryServerInterface inventoryServer;   TODO
 	
 	// Constructor
@@ -49,7 +50,7 @@ public class UserInterface {
 
 			// Get references to the servers of each microservice
 			userServer = (UserServerInterface) registry.lookup("userServer0");
-//			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
+			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
 			// inventoryServer = (InventoryServer) registry.lookup("inventoryServer0");
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -142,7 +143,7 @@ public class UserInterface {
 		while (true) {
 			// Print instructions
 			System.out.println(
-					">>> Enter a command: \"SIGNUP [username], [password]\", or \"LOGIN [username] [password]\", or \"EXIT:\"");
+					">>> Enter a command: \"signup [username], [password]\", or \"login [username] [password]\", or \"EXIT:\"");
 
 			// Get Input from user
 			String userInput = scanner.nextLine();
@@ -227,11 +228,121 @@ public class UserInterface {
 				break;
 			}
 		}
+		scanner.close();
 	}
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() {
-		// TODO
+		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "cart", "checkout", "order-history" ));
+
+		// Print the options available to choose from
+		Scanner scanner = new Scanner(System.in);
+		
+		
+		Boolean isValidCommand;
+		// Listen for keyboard input
+		while (true) {
+			// Print instructions
+			System.out.println("** The following items are available for sale: **");
+			System.out.println("id	Name	Description		Rating	Stock	Price ($)");
+			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
+			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
+			System.out.println("3	Banana	xxxxxxxxxxxxx		4.1	10	3.99");
+			System.out.println("4	Peach	xxxxxxxxxxxxx		3.5	10	4.99");
+			System.out.println("5	Pear	xxxxxxxxxxxxx		5.0	10	5.99");
+			System.out.println("\n** Available Commands: **");
+			System.out.println(" - \"add [id] [quantity]\"  --> Add a product to your shopping cart");
+			System.out.println(" - \"update [id] [quantity]\"  --> Update the quantity of product in your shopping cart");
+			System.out.println(" - \"remove [id]\" --> Remove a product from your shopping cart");
+			System.out.println(" - \"cart\"  --> View your shopping cart");
+			System.out.println(" - \"checkout\"  --> checkout. Clears the shopping cart and removes products from available stock");
+			System.out.println(" - \"order-history\"  --> view your order history");
+
+			// Get Input from user
+			String userInput = scanner.nextLine();
+
+
+			// Split user input into different words
+			List<String> wordList = new ArrayList<String>(Arrays.asList(userInput.trim().split(" "))); 
+			
+																										
+			String firstWord = wordList.get(0);
+
+			// Check for EXIT
+			if (firstWord.trim().toLowerCase().equals("exit") || userInput.trim().toLowerCase().equals("exit")) {
+				scanner.close();
+				this.logger.log(true, Level.INFO, "** Exiting!! **");
+				logger.close();
+				System.exit(0);
+				break; // break the loop to exit program
+			}
+			
+			// Minimum response is 4 chars ("EXIT")
+			if (userInput.length() < 6) {
+				logger.log(true, Level.INFO, "Invalid command: \"" + userInput + "\"");
+				continue;
+			}
+			
+			// Check for 3 or more words
+			if (wordList.size() < 3) {
+				logger.log(true, Level.INFO, "Invalid input");
+				continue;
+			}
+
+			// Check if the command is valid
+			if (!validCommands.contains(firstWord.toLowerCase())) {
+				logger.log(true, Level.INFO, "Invalid command: \"" + firstWord + "\"");
+				continue;
+			}
+
+
+			// Respond to input
+			String username;
+			String password;
+			Request response = null;
+
+			// Switch statement on the first word in the wordlist
+			switch (wordList.get(0).toLowerCase()) {
+			case "add":
+				// make sure user entered both username and password
+				if (userInput.trim().split(" ").length < 3) {
+					logger.log(true, Level.INFO,
+							"Invalid. Username and password required for SIGNUP request -> \"" + userInput + "\"");
+					break;
+				}
+
+				// Make request
+				wordList.remove(0); // remove first word ("signup")
+				password = wordList.get(wordList.size() - 1);
+				wordList.remove(wordList.size() - 1); // remove last word (the password)
+				username = String.join(" ", wordList);
+				response = makeRequest("signup", username, password);
+				handleLog(response);
+				break;
+			case "update":
+				// TODO
+				break;
+			case "remove":
+				// TODO
+				break;
+			case "cart":
+				// TODO
+				break;
+			case "checkout":
+				// TODO
+				break;
+			case "order-history":
+				// TODO
+				break;
+
+				
+			}
+			
+			if (response.isSuccessful()) {
+				break;
+			}
+		}
+		scanner.close();
 	}
 	
 	
@@ -248,7 +359,7 @@ public class UserInterface {
 		}
 		
 		// Handle user shopping
-//		handleShopping(); TODO
+		handleShopping();
 		
 	}
 	
