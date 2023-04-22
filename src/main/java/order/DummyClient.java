@@ -15,7 +15,7 @@ public class DummyClient {
 
         try {
         Registry registry = LocateRegistry.getRegistry("localhost", Integer.parseInt(args[0]));
-        OrderCoordinator storeManager = (OrderCoordinator) registry.lookup("coordinator");
+        OrderCoordinator storeManager = (OrderCoordinator) registry.lookup("order-coordinator");
 
         System.out.println(Helper.logWithTimestamp("Sending create operation Order Store ..."));
 

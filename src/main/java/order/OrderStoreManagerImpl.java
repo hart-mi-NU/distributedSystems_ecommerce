@@ -95,7 +95,7 @@ public class OrderStoreManagerImpl extends
     private OrderCoordinator getCoordinator() {
         try {
             Registry registry = LocateRegistry.getRegistry(this.coordinatorIP, Integer.parseInt(this.coordinatorPort));
-            return (OrderCoordinator) registry.lookup("coordinator");
+            return (OrderCoordinator) registry.lookup("order-coordinator");
         }  catch (NotBoundException | RemoteException e) {
             System.out.println(Helper.logWithTimestamp("Server:" + serverIP + " " + serverPort + " " + "Not able to find the coordinator"));
         }

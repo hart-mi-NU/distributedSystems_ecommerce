@@ -28,7 +28,7 @@ public class CoordinatorStarter {
         try {
             OrderCoordinator coordinator = new OrderCoordinatorImpl(serverIPAndPorts);
             Registry registry = LocateRegistry.createRegistry(Integer.parseInt(args[0]));
-            registry.rebind("coordinator", coordinator);
+            registry.rebind("order-coordinator", coordinator);
             Helper.logWithTimestamp(String.format("Coordinator running at port %s", args[0]));
         } catch (RemoteException e) {
             Helper.logWithTimestamp("Can not create the paxos server");
