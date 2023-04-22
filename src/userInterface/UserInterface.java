@@ -12,6 +12,8 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import order.OrderCoordinator;
+import order.Result;
 import userService.MyLogger;
 import userService.Request;
 import userService.SerializedFuture;
@@ -20,12 +22,14 @@ import userService.UserServerInterface;
 
 public class UserInterface {
 	
+	String username;
 	Registry registry;
 	MyLogger logger;
+	ShoppingCart shoppingCart;
 	
 	// References to a replica of each of the three servers
 	UserServerInterface userServer;
-//	 OrderCoordinator orderServer;		
+	OrderCoordinator orderServer;		
 	 // InventoryServerInterface inventoryServer;   TODO
 	
 	// Constructor
@@ -49,8 +53,10 @@ public class UserInterface {
 
 			// Get references to the servers of each microservice
 			userServer = (UserServerInterface) registry.lookup("userServer0");
-//			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
-			// inventoryServer = (InventoryServer) registry.lookup("inventoryServer0");
+			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
+			inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
+			this.shoppingCart = new ShoppingCart(inventoryServer);
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.log(true, Level.SEVERE, "Unable to access rmi registry. Exiting...");
@@ -142,7 +148,7 @@ public class UserInterface {
 		while (true) {
 			// Print instructions
 			System.out.println(
-					">>> Enter a command: \"SIGNUP [username], [password]\", or \"LOGIN [username] [password]\", or \"EXIT:\"");
+					">>> Enter a command: \"signup [username], [password]\", or \"login [username] [password]\", or \"EXIT:\"");
 
 			// Get Input from user
 			String userInput = scanner.nextLine();
@@ -183,7 +189,6 @@ public class UserInterface {
 
 
 			// Respond to input
-			String username;
 			String password;
 			Request response = null;
 
@@ -231,7 +236,180 @@ public class UserInterface {
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() {
-		// TODO
+
+		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
+
+		// Print the options available to choose from
+		Scanner scanner = new Scanner(System.in);
+		
+		
+		Boolean isValidCommand;
+		while (true) {
+			// Print instructions
+			System.out.println("** The following items are available for sale: **");
+			System.out.println("id	Name	Description		Rating	Stock	Price ($)");
+			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
+			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
+			System.out.println("3	Banana	xxxxxxxxxxxxx		4.1	10	3.99");
+			System.out.println("4	Peach	xxxxxxxxxxxxx		3.5	10	4.99");
+			System.out.println("5	Pear	xxxxxxxxxxxxx		5.0	10	5.99");
+			System.out.println("\n** Available Commands: **");
+			System.out.println(" - \"add [id] [quantity]\"  --> Add a product to your shopping cart");
+			System.out.println(" - \"update [id] [quantity]\"  --> Update the quantity of product in your shopping cart");
+			System.out.println(" - \"remove [id]\" --> Remove a product from your shopping cart");
+			System.out.println(" - \"show-cart\"  --> View your shopping cart");
+			System.out.println(" - \"empty-cart\"  --> Empty your shopping cart");
+			System.out.println(" - \"checkout\"  --> checkout. Clears the shopping cart and removes products from available stock");
+			System.out.println(" - \"order-history\"  --> view your order history");
+
+			// Get Input from user
+			String userInput = scanner.nextLine();
+
+
+			// Split user input into different words
+			List<String> wordList = new ArrayList<String>(Arrays.asList(userInput.trim().split(" "))); 
+			
+																										
+			String firstWord = wordList.get(0);
+
+			// Check for EXIT
+			if (firstWord.trim().toLowerCase().equals("exit")) {
+				scanner.close();
+				this.logger.log(true, Level.INFO, "** Exiting!! **");
+				logger.close();
+				System.exit(0);
+				break; // break the loop to exit program
+			}
+			
+			// Minimum response is 4 chars ("cart")
+			if (userInput.length() < 6) {
+				logger.log(true, Level.INFO, "Invalid command: \"" + userInput + "\"");
+				continue;
+			}
+
+
+			// Check if the command is valid
+			if (!validCommands.contains(firstWord.toLowerCase())) {
+				logger.log(true, Level.INFO, "Invalid command: \"" + firstWord + "\"");
+				continue;
+			}
+
+
+			// Respond to user input
+			Integer productId;
+			Integer quantity;
+			String response;
+			
+			// Switch statement on the first word in the wordlist
+			switch (wordList.get(0).toLowerCase()) {
+			case "add":
+				// make sure user entered enough arguments
+				if (userInput.trim().split(" ").length < 3) {
+					logger.log(true, Level.INFO,
+							"Invalid. Product id and quantity required to ADD to shopping cart:\"" + userInput + "\"");
+					break;
+				}
+
+				// remove first word ("add")
+				wordList.remove(0); 
+				
+				
+				
+				// make sure the product ID and Quantity are numeric
+				if (!isNumeric(wordList.get(0))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} else if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid quntity:\"" + userInput + "\"");
+					break;
+				}
+
+				productId = Integer.valueOf(wordList.get(0));
+				quantity = Integer.valueOf(wordList.get(1));
+
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.add(productId, quantity);
+				logger.log(true, Level.INFO, "add ->" + response);
+				break;
+				
+			case "update":
+				// make sure user entered enough arguments
+				if (userInput.trim().split(" ").length < 3) {
+					logger.log(true, Level.INFO,
+							"Invalid. Product id and quantity required to UPDATE shopping cart:\"" + userInput + "\"");
+					break;
+				}
+
+				// remove first word ("update")
+				wordList.remove(0); 
+				
+				// make sure the product ID and Quantity are numeric
+				if (!isNumeric(wordList.get(0))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} else if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid quntity:\"" + userInput + "\"");
+					break;
+				}
+
+				productId = Integer.valueOf(wordList.get(0));
+				quantity = Integer.valueOf(wordList.get(1));
+				
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.update(productId, quantity);
+				logger.log(true, Level.INFO, "Update ->" + response);
+				break;
+				
+			case "remove":
+				// make sure user entered only 2 arguments
+				if (userInput.trim().split(" ").length != 2) {
+					logger.log(true, Level.INFO,
+							"Invalid. remove + id are required to remove item from shopping cart:\"" + userInput + "\"");
+					break;
+				}
+				
+				// make sure the product ID is numeric
+				if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} 
+
+				
+				productId = Integer.valueOf(wordList.get(1));
+				
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.remove(productId);
+				logger.log(true, Level.INFO, "Remove ->" + response);
+				break;
+				
+			case "show-cart":
+				this.shoppingCart.printCart();
+				break;
+				
+			case "empty-cart":
+				String response = shoppingCart.clearAll();
+				logger.log(true, Level.INFO, "empty cart -> " + response);
+				break;
+				
+			case "checkout":
+				// TODO - @TANUJ
+				break;
+				
+			case "order-history":
+				List<ShoppingCart> orders = orderServer.getOrders(this.username);
+				for (ShoppingCart s : orders) {
+					s.printCart();
+					System.out.println("---------------------------"); // 
+				}
+				break;
+	
+			}
+		}
 	}
 	
 	
@@ -248,8 +426,8 @@ public class UserInterface {
 		}
 		
 		// Handle user shopping
-//		handleShopping(); TODO
-		
+		handleShopping();
+	
 	}
 	
 	// Main method to run terminal interaction
