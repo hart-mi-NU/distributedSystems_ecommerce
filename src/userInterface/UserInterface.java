@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import order.OrderCoordinator;
+import order.Result;
 import userService.MyLogger;
 import userService.Request;
 import userService.SerializedFuture;
@@ -21,6 +22,7 @@ import userService.UserServerInterface;
 
 public class UserInterface {
 	
+	String username;
 	Registry registry;
 	MyLogger logger;
 	ShoppingCart shoppingCart;
@@ -32,7 +34,6 @@ public class UserInterface {
 	
 	// Constructor
 	public UserInterface() {
-		
 		try {
 			this.logger = new MyLogger("userInterfaceLog.csv");
 
@@ -53,7 +54,7 @@ public class UserInterface {
 			// Get references to the servers of each microservice
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
-			// inventoryServer = (InventoryServer) registry.lookup("inventoryServer0");
+			 inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
 			this.shoppingCart = new ShoppingCart(inventoryServer);
 			
 		} catch (RemoteException e) {
@@ -188,7 +189,6 @@ public class UserInterface {
 
 
 			// Respond to input
-			String username;
 			String password;
 			Request response = null;
 
@@ -298,6 +298,7 @@ public class UserInterface {
 			// Respond to user input
 			Integer productId;
 			Integer quantity;
+			String response;
 			
 			// Switch statement on the first word in the wordlist
 			switch (wordList.get(0).toLowerCase()) {
@@ -309,41 +310,106 @@ public class UserInterface {
 					break;
 				}
 
-				// Make request
-				wordList.remove(0); // remove first word ("add")
-				quantity = Integer.valueOf(wordList.get(wordList.size() - 1));
+				// remove first word ("add")
+				wordList.remove(0); 
 				
 				
 				
-				wordList.remove(wordList.size() - 1); // remove last word (the password)
-				username = String.join(" ", wordList);
-				response = makeRequest("signup", username, password);
-				handleLog(response);
+				// make sure the product ID and Quantity are numeric
+				if (!isNumeric(wordList.get(0))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} else if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid quntity:\"" + userInput + "\"");
+					break;
+				}
+
+				productId = Integer.valueOf(wordList.get(0));
+				quantity = Integer.valueOf(wordList.get(1));
+
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.add(productId, quantity);
+				logger.log(true, Level.INFO, "add ->" + response);
 				break;
+				
 			case "update":
-				// TODO
+				// make sure user entered enough arguments
+				if (userInput.trim().split(" ").length < 3) {
+					logger.log(true, Level.INFO,
+							"Invalid. Product id and quantity required to UPDATE shopping cart:\"" + userInput + "\"");
+					break;
+				}
+
+				// remove first word ("update")
+				wordList.remove(0); 
+				
+				// make sure the product ID and Quantity are numeric
+				if (!isNumeric(wordList.get(0))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} else if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid quntity:\"" + userInput + "\"");
+					break;
+				}
+
+				productId = Integer.valueOf(wordList.get(0));
+				quantity = Integer.valueOf(wordList.get(1));
+				
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.update(productId, quantity);
+				logger.log(true, Level.INFO, "Update ->" + response);
 				break;
+				
 			case "remove":
-				// TODO
-				break;
-			case "cart":
-				// TODO
-				break;
-			case "checkout":
-				// TODO
-				break;
-			case "order-history":
-				// TODO
-				break;
+				// make sure user entered only 2 arguments
+				if (userInput.trim().split(" ").length != 2) {
+					logger.log(true, Level.INFO,
+							"Invalid. remove + id are required to remove item from shopping cart:\"" + userInput + "\"");
+					break;
+				}
+				
+				// make sure the product ID is numeric
+				if (!isNumeric(wordList.get(1))) {
+					logger.log(true, Level.INFO,
+							"Invalid product id:\"" + userInput + "\"");
+					break;
+				} 
 
 				
-			}
-			
-			if (response.isSuccessful()) {
+				productId = Integer.valueOf(wordList.get(1));
+				
+				// Update shopping cart and print the response to terminal
+				response = this.shoppingCart.remove(productId);
+				logger.log(true, Level.INFO, "Remove ->" + response);
 				break;
+				
+			case "show-cart":
+				this.shoppingCart.printCart();
+				break;
+				
+			case "empty-cart":
+				String response = shoppingCart.clearAll();
+				logger.log(true, Level.INFO, "empty cart -> " + response);
+				break;
+				
+			case "checkout":
+				// TODO - @TANUJ
+				break;
+				
+			case "order-history":
+				List<ShoppingCart> orders = orderServer.getOrders(this.username);
+				for (ShoppingCart s : orders) {
+					s.printCart();
+					System.out.println("---------------------------"); // 
+				}
+				break;
+	
 			}
 		}
-		scanner.close();
 	}
 	
 	

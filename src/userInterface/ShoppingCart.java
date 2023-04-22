@@ -14,25 +14,50 @@ public class ShoppingCart {
 	// subtotal (value) for each product id (key) ... quantity * unit price
 	Map<Integer, Double> subtotals;
 	
+	double total;
+	
 	// Inventory server used to get item prices
 	InventoryServer inventory;
 	
 	public ShoppingCart(InventoryService inventoryServer) {
 		this.quantities = new HashMap<>();
 		this.subtotals = new HashMap<>();
+		this.total = 0.0;
 		this.inventory = inventoryServer;
 	}
 
 
 	
 	// Clear the shopping cart
-	public void clearAll() {
-		this.quantities = new HashMap<>();
-		this.subtotals = new HashMap<>();
+	public String clearAll() {
+		this.quantities.clear();
+		this.subtotals.clear();
+		this.total = 0.0;
+		return "success";
+	}
+	
+	// Update the total
+	private void updateTotal() {
+		// sum the subtotals hashmap
+		double sum = 0.0;
+		for (Double value : this.subtotals.values()) {
+		    sum += value;
+		}
 	}
 	
 	// Add a quantity of productId to the shopping cart
-	public void add(Integer productId, Integer quantity) {
+	// Return "success" if successful
+	// Return error message is not successful
+	public String add(Integer productId, Integer quantity) {
+		Integer stock = this.inventory.getProductStock(productId);
+		if (stock == -1) {
+			return "Invalid product id";
+		} else if (stock == 0) {
+			return "Unable to add to cart - item out of stock";
+		} else if ( quantity > stock) {
+			return "Unable to add to cart - quantity exceeds available stock";
+		}
+		
 		Double unitPrice = inventoryServer.getPrice(productId);
 		Double subtotal = unitPrice * quantity;
 		
@@ -51,15 +76,29 @@ public class ShoppingCart {
 		} else {
 			this.subtotals.put(productId, subtotal);
 		}
+		
+		updateTotal();
+		return "success";
 	}
 
 	
 	// update a given quantity of a productId in the shopping cart
-	public void update(Integer productId, Integer quantity) {
+	public String update(Integer productId, Integer quantity) {
+		Integer stock = this.inventory.getProductStock(productId);
+		if (stock == -1) {
+			return "Invalid product id";
+		} else if (stock == 0) {
+			return "Unable to add to cart - item out of stock";
+		} else if ( quantity > stock) {
+			return "Unable to add to cart - quantity exceeds available stock";
+		}
+		
 		Double unitPrice = inventoryServer.getPrice(productId);
 		Double subtotal = unitPrice * quantity;
 		this.quantities.put(productId, quantity);
 		this.subtotals.put(productId, subtotal);
+		updateTotal();
+		return "success";
 	}
 	
 	
@@ -77,14 +116,30 @@ public class ShoppingCart {
 	
 	
 	// Remove an item from the shopping cart
-	public void remove(Integer productId) {
+	public String remove(Integer productId) {
+		Integer stock = this.inventory.getProductStock(productId);
+		if (stock == -1) {
+			return "Invalid product id";
+		}
 		this.quantities.remove(productId);
 		this.subtotals.remove(productId);
+		updateTotal();
+		return "success";
 	}
 	
 	
 	// Return a map of subtotals for each item id
 	public Map<Integer, Double> getSubtotals(){
 		return this.subtotals;
+	}
+	
+	// Get the grand total for the cart
+	public Double getTotal() {
+		return this.total;
+	}
+	
+	// Print the cart contents to the terminal
+	public void printCart() {
+		// TODO
 	}
 }
