@@ -54,9 +54,9 @@ public class UserInterface {
 			// Get references to the servers of each microservice
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
-			 inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
+			inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
 			this.shoppingCart = new ShoppingCart(inventoryServer);
-			
+
 		} catch (RemoteException e) {
 			e.printStackTrace();
 			logger.log(true, Level.SEVERE, "Unable to access rmi registry. Exiting...");
@@ -232,11 +232,11 @@ public class UserInterface {
 				break;
 			}
 		}
-		scanner.close();
 	}
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() {
+
 		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
 		// Print the options available to choose from
@@ -427,7 +427,7 @@ public class UserInterface {
 		
 		// Handle user shopping
 		handleShopping();
-		
+	
 	}
 	
 	// Main method to run terminal interaction
