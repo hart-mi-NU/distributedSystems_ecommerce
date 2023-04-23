@@ -55,7 +55,7 @@ public class UserInterface {
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
 			inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
-			this.shoppingCart = new ShoppingCart(inventoryServer);
+			
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -236,6 +236,7 @@ public class UserInterface {
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() {
+		this.shoppingCart = new ShoppingCart(inventoryServer, this.username);
 
 		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
