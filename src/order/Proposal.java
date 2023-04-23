@@ -1,5 +1,7 @@
 package order;
 
+import userInterface.ShoppingCart;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,15 +14,13 @@ public class Proposal implements Serializable {
     private long id;
     private String operation;
     private Integer orderId;
-    private Integer userId;
-    private List<List<Integer>> itemIds = new ArrayList<>();
+    private ShoppingCart shoppingCart;
 
-    public Proposal(long id, String operation, Integer orderId, Integer userId, List<List<Integer>> itemIds) {
+    public Proposal(long id, String operation, Integer orderId, ShoppingCart shoppingCart) {
         this.id = id;
         this.operation = operation;
         this.orderId = orderId;
-        this.userId = userId;
-        this.itemIds = itemIds;
+        this.shoppingCart = shoppingCart;
     }
 
     public long getId() {
@@ -41,28 +41,25 @@ public class Proposal implements Serializable {
 
     public void setOrderId(Integer orderId) { this.orderId = orderId;}
 
-    public void setUserId(Integer userId) {this.userId = userId;}
+    public void setShoppingCart(ShoppingCart shoppingCart) {this.shoppingCart = shoppingCart;}
 
     public Integer getOrderId() { return this.orderId; }
 
-    public Integer getUserId() { return this.userId;}
-
-    public List<List<Integer>> getItemIds() {return this.itemIds;}
+    public ShoppingCart getShoppingCart() { return this.shoppingCart;}
 
     /**
      * Generate proposal.
      * @param operation name of operation
      * @param orderId order id for the order
-     * @param userId user who is placing the order
-     * @param itemIds id of items in the order
+     * @param shoppingCart shopping cart of the user
      * @return
      */
-    public static synchronized Proposal createProposal(String operation, Integer orderId, Integer userId, List<List<Integer>> itemIds) {
+    public static synchronized Proposal createProposal(String operation, Integer orderId, ShoppingCart shoppingCart) {
         uniqueId += 1;
-        return new Proposal(uniqueId, operation, orderId, userId, itemIds);
+        return new Proposal(uniqueId, operation, orderId, shoppingCart);
     }
 
     public String toString() {
-        return "Proposal: " + "Id: " + id + " Operation: " + operation + " OrderId: " + orderId + " UserId: " + userId + " Items: " + itemIds;
+        return "Proposal: " + "Id: " + id + " Operation: " + operation + " OrderId: " + orderId + " Shopping cart: " + shoppingCart;
     }
 }

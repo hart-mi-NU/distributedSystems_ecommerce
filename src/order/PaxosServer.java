@@ -1,5 +1,7 @@
 package order;
 
+import userInterface.ShoppingCart;
+
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.util.List;
@@ -36,19 +38,18 @@ public interface PaxosServer extends Remote {
     /**
      * Used to create an order and run it in a PAXOS fashion.
      *
-     * @param userId  user who is placing the order
-     * @param itemIds id of items in the order
+     * @param shoppingCart shopping cart of the user
      * @return result after executing the operation
      * @throws RemoteException
      */
-    Result createOrder(Integer orderId, Integer userId, List<List<Integer>> itemIds) throws RemoteException;
+    Result createOrder(Integer orderId, ShoppingCart shoppingCart) throws RemoteException;
 
     /**
      * Used to get orders of the current user.
      *
-     * @param userId  user who is placing the order
+     * @param username username of the user
      * @return result after executing the operation
      * @throws RemoteException
      */
-    Result getOrders(Integer userId) throws RemoteException;
+    Result getOrders(String username) throws RemoteException;
 }
