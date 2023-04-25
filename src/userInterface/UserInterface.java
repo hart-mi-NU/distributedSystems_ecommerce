@@ -56,7 +56,7 @@ public class UserInterface {
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
 			inventoryServer = (InventoryService) registry.lookup("inventoryServer");
-			this.shoppingCart = new ShoppingCart(inventoryServer);
+
 
 		} catch (RemoteException e) {
 			e.printStackTrace();
@@ -237,6 +237,7 @@ public class UserInterface {
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() throws RemoteException {
+		this.shoppingCart = new ShoppingCart(inventoryServer, this.username);
 
 		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
@@ -402,6 +403,7 @@ public class UserInterface {
 				break;
 				
 			case "order-history":
+				//todo: commented the following code by dhruv. needs fix
 //				List<ShoppingCart> orders = orderServer.getOrders(this.username);
 //				for (ShoppingCart s : orders) {
 //					s.printCart();

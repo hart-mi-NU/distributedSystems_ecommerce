@@ -16,16 +16,17 @@ public class ShoppingCart {
 
 	// subtotal (value) for each product id (key) ... quantity * unit price
 	Map<Integer, Double> subtotals;
-	
+	String username;
 	double total;
 	
 	// Inventory server used to get item prices
 	InventoryService inventory;
 	
-	public ShoppingCart(InventoryService inventoryServer) {
+	public ShoppingCart(InventoryService inventoryServer, String username) {
 		this.quantities = new HashMap<>();
 		this.subtotals = new HashMap<>();
 		this.total = 0.0;
+		this.username = username;
 		this.inventory = inventoryServer;
 	}
 

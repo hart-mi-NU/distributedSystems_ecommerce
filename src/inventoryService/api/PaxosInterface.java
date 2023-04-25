@@ -1,10 +1,10 @@
-package api;
+package inventoryService.api;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import domain.Promise;
-import domain.Proposal;
+import inventoryService.dto.Promise;
+import inventoryService.dto.Proposal;
 
 /**
  * Interface provides operations to initiate different stages
