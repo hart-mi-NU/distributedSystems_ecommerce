@@ -1,4 +1,4 @@
-package server;
+package inventoryService.server;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -8,7 +8,7 @@ import java.util.Date;
  * Logger class used to log error/info message on stdout. Every log message logs current timestamp
  * with every log message.
  */
-public class ServerLogger {
+public class InventoryServiceLogger {
 
   /**
    * returns timestamp as string in 'yyyy-mm-dd:mm:ss.SSS' format.

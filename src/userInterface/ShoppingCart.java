@@ -1,10 +1,13 @@
 package userInterface;
 
+import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import inventoryService.api.InventoryService;
 
 public class ShoppingCart {
 
@@ -17,7 +20,7 @@ public class ShoppingCart {
 	double total;
 	
 	// Inventory server used to get item prices
-	InventoryServer inventory;
+	InventoryService inventory;
 	
 	public ShoppingCart(InventoryService inventoryServer) {
 		this.quantities = new HashMap<>();
@@ -48,7 +51,7 @@ public class ShoppingCart {
 	// Add a quantity of productId to the shopping cart
 	// Return "success" if successful
 	// Return error message is not successful
-	public String add(Integer productId, Integer quantity) {
+	public String add(Integer productId, Integer quantity) throws RemoteException {
 		Integer stock = this.inventory.getProductStock(productId);
 		if (stock == -1) {
 			return "Invalid product id";
@@ -57,25 +60,26 @@ public class ShoppingCart {
 		} else if ( quantity > stock) {
 			return "Unable to add to cart - quantity exceeds available stock";
 		}
-		
-		Double unitPrice = inventoryServer.getPrice(productId);
-		Double subtotal = unitPrice * quantity;
-		
-		// Update the quantity in the cart
-		if (this.quantities.containsKey(productId)) {
-			Integer priorQty = this.quantities.get(productId);
-			this.quantities.put(productId, priorQty + quantity);
-		} else {
-			this.quantities.put(productId, quantity);
-		}
-		
-		// Update the subtotal for the product id
-		if (this.quantities.containsKey(productId)) {
-			Double priorSubtotal = this.subtotals.get(productId);
-			this.subtotals.put(productId, priorSubtotal + subtotal);
-		} else {
-			this.subtotals.put(productId, subtotal);
-		}
+
+		//todo
+//		Double unitPrice = inventoryServer.getPrice(productId);
+//		Double subtotal = unitPrice * quantity;
+//
+//		// Update the quantity in the cart
+//		if (this.quantities.containsKey(productId)) {
+//			Integer priorQty = this.quantities.get(productId);
+//			this.quantities.put(productId, priorQty + quantity);
+//		} else {
+//			this.quantities.put(productId, quantity);
+//		}
+//
+//		// Update the subtotal for the product id
+//		if (this.quantities.containsKey(productId)) {
+//			Double priorSubtotal = this.subtotals.get(productId);
+//			this.subtotals.put(productId, priorSubtotal + subtotal);
+//		} else {
+//			this.subtotals.put(productId, subtotal);
+//		}
 		
 		updateTotal();
 		return "success";
@@ -83,7 +87,7 @@ public class ShoppingCart {
 
 	
 	// update a given quantity of a productId in the shopping cart
-	public String update(Integer productId, Integer quantity) {
+	public String update(Integer productId, Integer quantity) throws RemoteException {
 		Integer stock = this.inventory.getProductStock(productId);
 		if (stock == -1) {
 			return "Invalid product id";
@@ -92,11 +96,12 @@ public class ShoppingCart {
 		} else if ( quantity > stock) {
 			return "Unable to add to cart - quantity exceeds available stock";
 		}
-		
-		Double unitPrice = inventoryServer.getPrice(productId);
-		Double subtotal = unitPrice * quantity;
-		this.quantities.put(productId, quantity);
-		this.subtotals.put(productId, subtotal);
+
+		//todo
+//		Double unitPrice = inventoryServer.getPrice(productId);
+//		Double subtotal = unitPrice * quantity;
+//		this.quantities.put(productId, quantity);
+//		this.subtotals.put(productId, subtotal);
 		updateTotal();
 		return "success";
 	}
@@ -116,7 +121,7 @@ public class ShoppingCart {
 	
 	
 	// Remove an item from the shopping cart
-	public String remove(Integer productId) {
+	public String remove(Integer productId) throws RemoteException {
 		Integer stock = this.inventory.getProductStock(productId);
 		if (stock == -1) {
 			return "Invalid product id";

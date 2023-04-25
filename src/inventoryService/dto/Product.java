@@ -1,4 +1,4 @@
-package dto;
+package inventoryService.dto;
 
 import java.io.Serializable;
 

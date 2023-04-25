@@ -1,34 +1,26 @@
 package inventoryService.server;
 
+import java.net.MalformedURLException;
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 
 import inventoryService.api.InventoryService;
 import inventoryService.dto.Product;
 
-public class ServerApp {
-  public static void main(String[] args) throws RemoteException {
+public class InventoryServiceApplication extends InventoryServiceImpl{
 
-    Product prod1 = new Product();
-    prod1.setName("iphone");
-    prod1.setProductId(1001);
-    prod1.setDescription("Mobile phone");
-    prod1.setPrice(999);
-    prod1.setRating(4.8);
-
-    Product prod2 = new Product();
-    prod2.setName("Airpods pro");
-    prod2.setProductId(1002);
-    prod2.setDescription("Earphones");
-    prod2.setPrice(249);
-    prod2.setRating(4.5);
-
+  public static String host;
+  protected InventoryServiceApplication(String port) throws RemoteException, MalformedURLException {
     InventoryService service = new InventoryServiceImpl();
-    service.addProduct(prod1);
-    service.updateProductStock(1001, 10);
+    String serverName = new StringBuilder("inventoryService").append("-").append(port).toString();
+    Naming.rebind(serverName, service);
+    InventoryServiceLogger.info("Inventory Server ready!");
+  }
 
-    service.addProduct(prod2);
-    service.updateProductStock(1002, 59);
+  public static void main(String[] args) throws RemoteException, MalformedURLException {
+    host = args[0];
+    String port = args[1];
 
-    System.out.println(service.getProductAndInventory().toString());
+    new InventoryServiceApplication(port);
   }
 }

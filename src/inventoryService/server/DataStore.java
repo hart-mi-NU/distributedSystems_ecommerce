@@ -1,13 +1,13 @@
-package server;
+package inventoryService.server;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import dto.Product;
+import inventoryService.dto.Product;
 
 public class DataStore {
 
-  private DataStore singletonDataStore;
+  private static DataStore singletonDataStore;
   private final Map<Integer, Integer> inventoryMap;
   private final Map<Integer, Product> productMap;
 
@@ -16,7 +16,7 @@ public class DataStore {
     productMap = new HashMap<>();
   }
 
-  public DataStore getInstance() {
+  public static DataStore getInstance() {
     if(null == singletonDataStore) {
       singletonDataStore = new DataStore();
     }
@@ -27,6 +27,7 @@ public class DataStore {
     if(inventoryMap.containsKey(prodId)) {
       int currentQuantity = inventoryMap.get(prodId);
       inventoryMap.put(prodId, (currentQuantity+quantity));
+      return;
     }
     throw new IllegalStateException("Product not found.");
   }
@@ -36,6 +37,8 @@ public class DataStore {
     if(productMap.containsKey(prodId)) {
       throw new IllegalStateException("Product id already exists. Use a different productId");
     }
+    productMap.put(prodId, product);
+    inventoryMap.put(prodId, 0);
   }
 
   synchronized void updateProduct(Product product) {
@@ -50,7 +53,7 @@ public class DataStore {
     if(inventoryMap.containsKey(prodId)) {
       return inventoryMap.get(prodId);
     }
-    throw new IllegalStateException("product not found!");
+    return -1;
   }
 
   synchronized Product getProductInfo(int prodId) {
@@ -58,5 +61,15 @@ public class DataStore {
       return productMap.get(prodId);
     }
     throw new IllegalStateException("product not found!");
+  }
+
+  synchronized Map<Product, Integer> getAllProductsAndInventory() {
+    Map<Product, Integer> productQuantityMap = new HashMap<>();
+    for(int key: productMap.keySet()) {
+      int quantity = inventoryMap.getOrDefault(key, 0);
+      Product prod = productMap.get(key);
+      productQuantityMap.put(prod, quantity);
+    }
+    return productQuantityMap;
   }
 }

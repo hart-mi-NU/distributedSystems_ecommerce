@@ -1,4 +1,4 @@
-package domain;
+package inventoryService.dto;
 
 import java.io.Serializable;
 

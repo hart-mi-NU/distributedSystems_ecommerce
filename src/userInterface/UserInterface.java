@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import inventoryService.api.InventoryService;
 import order.OrderCoordinator;
 import order.Result;
 import userService.MyLogger;
@@ -30,7 +31,7 @@ public class UserInterface {
 	// References to a replica of each of the three servers
 	UserServerInterface userServer;
 	OrderCoordinator orderServer;		
-	 // InventoryServerInterface inventoryServer;   TODO
+	InventoryService inventoryServer;   //TODO
 	
 	// Constructor
 	public UserInterface() {
@@ -54,7 +55,7 @@ public class UserInterface {
 			// Get references to the servers of each microservice
 			userServer = (UserServerInterface) registry.lookup("userServer0");
 			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
-			inventoryServer = (InventoryServer) registry.lookup("inventoryServer");
+			inventoryServer = (InventoryService) registry.lookup("inventoryServer");
 			this.shoppingCart = new ShoppingCart(inventoryServer);
 
 		} catch (RemoteException e) {
@@ -235,7 +236,7 @@ public class UserInterface {
 	}
 	
 	// handle the shopping experience once a user is logged in
-	private void handleShopping() {
+	private void handleShopping() throws RemoteException {
 
 		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
@@ -392,8 +393,8 @@ public class UserInterface {
 				break;
 				
 			case "empty-cart":
-				String response = shoppingCart.clearAll();
-				logger.log(true, Level.INFO, "empty cart -> " + response);
+//				String response = shoppingCart.clearAll();
+//				logger.log(true, Level.INFO, "empty cart -> " + response);
 				break;
 				
 			case "checkout":
@@ -401,11 +402,11 @@ public class UserInterface {
 				break;
 				
 			case "order-history":
-				List<ShoppingCart> orders = orderServer.getOrders(this.username);
-				for (ShoppingCart s : orders) {
-					s.printCart();
-					System.out.println("---------------------------"); // 
-				}
+//				List<ShoppingCart> orders = orderServer.getOrders(this.username);
+//				for (ShoppingCart s : orders) {
+//					s.printCart();
+//					System.out.println("---------------------------"); //
+//				}
 				break;
 	
 			}
@@ -414,7 +415,7 @@ public class UserInterface {
 	
 	
 	// Run the user interface
-	public void run() {
+	public void run() throws RemoteException {
 		// Get server references
 		getServerRefs();
 
@@ -431,7 +432,7 @@ public class UserInterface {
 	}
 	
 	// Main method to run terminal interaction
-	public static void main(String args[]) {
+	public static void main(String args[]) throws RemoteException {
 		UserInterface ui = new UserInterface();
 		ui.run();
 	}
