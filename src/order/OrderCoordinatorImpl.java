@@ -1,5 +1,6 @@
 package order;
 
+import inventoryService.api.InventoryService;
 import userInterface.ShoppingCart;
 
 import java.rmi.NotBoundException;
@@ -16,6 +17,7 @@ import java.util.List;
  */
 public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCoordinator {
     List<PaxosServer> servers = new ArrayList<>();
+    InventoryService inventoryService;
     private Integer orderId = 0;
 
     /**
@@ -29,6 +31,19 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
         serverIPPorts.forEach((serverIPAndPort) -> {
             servers.add(getServerReference(serverIPAndPort.get(0), Integer.parseInt(serverIPAndPort.get(1))));
         });
+        inventoryService = getInventoryService();
+    }
+
+    private InventoryService getInventoryService() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 4000);
+            return  (InventoryService) registry.lookup("inventoryService-4000");
+        } catch (NotBoundException | RemoteException exception) {
+            System.out.println(Helper.logWithTimestamp("Not able to find reference for the inventory service"));
+        }
+        System.out.println("Returning null inventory service reference");
+
+        return null;
     }
 
     private PaxosServer getServerReference(String ip, int port) {
@@ -47,14 +62,13 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
 
     @Override
     public Boolean removeItem(Integer itemId, Integer stock) throws RemoteException {
-        // TODO: contact inventory service
+        inventoryService.updateProductStock(itemId, inventoryService.getProductStock(itemId) - stock);
         return true;
     }
 
     @Override
     public int inStock(Integer itemId) throws RemoteException {
-        // TODO: contact inventory service
-        return 100;
+        return inventoryService.getProductStock(itemId);
     }
 
     @Override
