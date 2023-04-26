@@ -18,7 +18,6 @@ public interface EcomInterface extends Remote {
 	SerializedFuture<Request> signup(String username, String password) throws RemoteException;
 	Request login(String username, String password) throws RemoteException;
 	
-
 	// INVENTORY SERVER 
 	Integer getProductStock(Integer productId) throws RemoteException;
 	Map<Product, Integer> getProductAndInventory() throws RemoteException;
@@ -30,5 +29,5 @@ public interface EcomInterface extends Remote {
 	Result createOrder(ShoppingCart cart) throws RemoteException;
 	Result getOrders(String username) throws RemoteException;
   
-  
+ 
 }
