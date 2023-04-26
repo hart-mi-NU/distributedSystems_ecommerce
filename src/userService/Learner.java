@@ -21,7 +21,7 @@ public class Learner extends UnicastRemoteObject implements LearnerInterface, Ru
 	private Integer serverId;
 	private Double highestLearnedId;
 	private Integer serverCount;
-	private Integer port = 8013;
+	private Integer port = 4000;
 	private UserServerInterface myServer;
 	private MyLogger logger;
 	private Registry registry;

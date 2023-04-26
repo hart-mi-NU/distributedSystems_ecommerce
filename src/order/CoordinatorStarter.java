@@ -27,7 +27,7 @@ public class CoordinatorStarter {
 
         try {
             OrderCoordinator coordinator = new OrderCoordinatorImpl(serverIPAndPorts);
-            Registry registry = LocateRegistry.getRegistry(8013);
+            Registry registry = LocateRegistry.getRegistry(4000);
             registry.rebind("order-coordinator", coordinator);
             Helper.logWithTimestamp("Coordinator running at port 8013");
 //            Helper.logWithTimestamp(String.format("Coordinator running at port %s", args[0]));
