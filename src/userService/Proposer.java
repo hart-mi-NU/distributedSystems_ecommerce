@@ -23,7 +23,7 @@ public class Proposer extends UnicastRemoteObject implements Callable<Request>, 
 	private Integer acceptedCount;
 	private Integer serverCount;
 	private Integer consensusMin;
-	private Integer port = 8013;
+	private Integer port = 4000;
 	private Double proposerId;
 	
 	public Proposer(Double proposerId, Integer serverId, Integer uniqueId, Request request, MyLogger logger, Integer serverCount) throws RemoteException {

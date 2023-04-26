@@ -5,18 +5,29 @@ import java.rmi.RemoteException;
 import java.util.Map;
 
 import inventoryService.dto.Product;
+import order.Result;
+import userInterface.ShoppingCart;
+import userService.Request;
+import userService.SerializedFuture;
 
+
+// All methods that userInterface needs to interact with all 3 servers (user, inventory, order)
 public interface EcomInterface extends Remote {
-  Map<Product, Integer> getProductAndInventory() throws RemoteException;
-
-  void addProduct(Product product) throws RemoteException;
-
-  Product getProductInfo(int productId) throws RemoteException;
-
-  void updateProductInfo(Product product) throws RemoteException;
-
-  int getProductStock(int prodId) throws RemoteException;
-
-  void updateProductStock(int productId, int stockVal) throws RemoteException;
-
+	
+	// USER SERVER METHODS
+	SerializedFuture<Request> signup(String username, String password) throws RemoteException;
+	Request login(String username, String password) throws RemoteException;
+	
+	// INVENTORY SERVER 
+	Integer getProductStock(Integer productId) throws RemoteException;
+	Map<Product, Integer> getProductAndInventory() throws RemoteException;
+	Product getProduct(Integer productId) throws RemoteException;
+	void addProduct(Product product) throws RemoteException; // Mike: do we need this in the gateway??
+  
+	
+	// ORDER SERVER
+	Result createOrder(ShoppingCart cart) throws RemoteException;
+	Result getOrders(String username) throws RemoteException;
+  
+ 
 }

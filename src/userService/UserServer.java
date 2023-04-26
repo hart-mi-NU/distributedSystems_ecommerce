@@ -26,7 +26,7 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 	public Learner learner;
 	public Acceptor acceptor;
 	private MyLogger logger;;
-	private Integer port = 8013;
+	private Integer port = 4000;
 	private Integer serverCount;
 	private Integer serverId;
 	private HashMap<String, String> userMap;

@@ -15,7 +15,7 @@ public class Client extends UnicastRemoteObject implements ClientInterface {
 
 	private static final long serialVersionUID = 1L;
 	private MyLogger logger;;
-	private Integer port = 8013;
+	private Integer port = 4000;
 	private Integer maxServers = 30;
 	private Integer clientId;
 	private UserServerInterface server;
