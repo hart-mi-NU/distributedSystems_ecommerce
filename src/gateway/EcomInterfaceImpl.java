@@ -31,38 +31,32 @@ public class EcomInterfaceImpl extends UnicastRemoteObject implements EcomInterf
 
 @Override
 public SerializedFuture<Request> signup(String username, String password) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getUserService().signup(username, password);
 }
 
 @Override
 public Request login(String username, String password) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getUserService().login(username, password);
 }
 
 @Override
 public Integer getProductStock(Integer productId) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getInventoryService().getProductStock(productId);
 }
 
 @Override
 public Product getProduct(Integer productId) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getInventoryService().getProductInfo(productId);
 }
 
 @Override
 public Result createOrder(ShoppingCart cart) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getOrderService().createOrder(cart);
 }
 
 @Override
 public Result getOrders(String username) throws RemoteException {
-	// TODO Auto-generated method stub
-	return null;
+	return LoadBalancer.getOrderService().getOrders(username);
 }
 
 }
