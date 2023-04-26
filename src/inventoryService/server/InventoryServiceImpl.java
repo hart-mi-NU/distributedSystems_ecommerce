@@ -46,7 +46,7 @@ public class InventoryServiceImpl extends UnicastRemoteObject implements Invento
     InventoryServiceLogger.info("Received update product stock request");
     Product stub = new Product();
     stub.setProductId(productId);
-    Proposal generatedProposal = Proposal.generateProposal("update-product-stock", stub, 0);
+    Proposal generatedProposal = Proposal.generateProposal("update-product-stock", stub, stockVal);
     coordinatorService.execute(generatedProposal);
   }
 
@@ -71,7 +71,7 @@ public class InventoryServiceImpl extends UnicastRemoteObject implements Invento
       InventoryServiceLogger.info("Propose complete: " + proposal);
       response.setStatus("200");
     } else {
-      InventoryServiceLogger.error("Propose rejected: " + proposal);
+      InventoryServiceLogger.error("Propose rejected: " + proposal.toString());
       response.setStatus("500");
     }
 
@@ -102,7 +102,7 @@ public class InventoryServiceImpl extends UnicastRemoteObject implements Invento
     if(operation.equals("add-product")) {
       storeInstance.addProduct(product);
     } else if(operation.equals("update-product-stock")) {
-      storeInstance.addProductQuantity(product.getProductId(), quantity);
+      storeInstance.updateProductQuantity(product.getProductId(), quantity);
     } else if(operation.equals("update-product")) {
       storeInstance.updateProduct(product);
     }

@@ -1,26 +1,28 @@
 package inventoryService.server;
 
 import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 import inventoryService.api.InventoryService;
-import inventoryService.dto.Product;
+
 
 public class InventoryServiceApplication extends InventoryServiceImpl{
 
   public static String host;
-  protected InventoryServiceApplication(String port) throws RemoteException, MalformedURLException {
+  protected InventoryServiceApplication(String serverNum) throws RemoteException {
     InventoryService service = new InventoryServiceImpl();
-    String serverName = new StringBuilder("inventoryService").append("-").append(port).toString();
-    Naming.rebind(serverName, service);
+    Registry registry = LocateRegistry.getRegistry(4000);
+    String serverName = new StringBuilder("inventoryService").append("-").append(serverNum).toString();
+    registry.rebind(serverName, service);
     InventoryServiceLogger.info("Inventory Server ready!");
   }
 
-  public static void main(String[] args) throws RemoteException, MalformedURLException {
+  public static void main(String[] args) throws RemoteException {
     host = args[0];
-    String port = args[1];
+    String serverNum = args[1];
 
-    new InventoryServiceApplication(port);
+    new InventoryServiceApplication(serverNum);
   }
 }

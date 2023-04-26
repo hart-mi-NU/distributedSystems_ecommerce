@@ -401,8 +401,8 @@ public class UserInterface {
 				break;
 				
 			case "order-history":
-				Result result = store.getOrders(this.username);
-				List<ShoppingCart> orders = result.getShoppingCart();
+				Result getOrderResult = store.getOrders(this.username);
+				List<ShoppingCart> orders = getOrderResult.getShoppingCart();
 				for (ShoppingCart s : orders) {
 					s.printCart();
 					System.out.println("---------------------------"); //
