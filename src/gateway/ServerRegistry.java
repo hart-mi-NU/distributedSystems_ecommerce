@@ -28,11 +28,12 @@ public class ServerRegistry {
   public static List<String> getUserServiceRegistry() {
     //todo
     List<String> servers = new ArrayList<>();
-    servers.add("user-service1");
-    servers.add("user-service2");
-    servers.add("user-service3");
-    servers.add("user-service4");
-    servers.add("user-service5");
+    servers.add("userServer0");
+    servers.add("userServer1");
+    servers.add("userServer2");
+    servers.add("userServer3");
+    servers.add("userServer4");
+
     return servers;
   }
 }

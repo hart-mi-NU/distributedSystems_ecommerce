@@ -18,7 +18,7 @@ public class Acceptor extends UnicastRemoteObject implements AcceptorInterface, 
 	private boolean isBusy;
 	private MyLogger logger;
 	private Registry registry;
-	private Integer port = 8013;
+	private Integer port = 4000;
 	private Integer serverCount;
 	private Integer acceptorId;
 	private Double ignoreBelow;

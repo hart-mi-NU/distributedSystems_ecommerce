@@ -12,6 +12,7 @@ import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import gateway.EcomInterface;
 import inventoryService.api.InventoryService;
 import order.OrderCoordinator;
 import order.Result;
@@ -26,12 +27,9 @@ public class UserInterface {
 	String username;
 	Registry registry;
 	MyLogger logger;
+	EcomInterface store;
 	ShoppingCart shoppingCart;
-	
-	// References to a replica of each of the three servers
-	UserServerInterface userServer;
-	OrderCoordinator orderServer;		
-	InventoryService inventoryServer;   //TODO
+	int port = 4000;
 	
 	// Constructor
 	public UserInterface() {
@@ -50,12 +48,10 @@ public class UserInterface {
 	private void getServerRefs() {
 		try {
 			// Get rmi registry
-			registry = LocateRegistry.getRegistry(8013);
+			registry = LocateRegistry.getRegistry(this.port);
 
-			// Get references to the servers of each microservice
-			userServer = (UserServerInterface) registry.lookup("userServer0");
-			orderServer = (OrderCoordinator) registry.lookup("order-coordinator"); 
-			inventoryServer = (InventoryService) registry.lookup("inventoryServer");
+			// Get references to the gateway
+			store = (EcomInterface) registry.lookup("gateway-service");
 
 
 		} catch (RemoteException e) {
@@ -103,14 +99,14 @@ public class UserInterface {
 
 				if (requestType.toLowerCase().equals("signup")) {
 					// get the SerializedFuture object
-					SerializedFuture<Request> future = this.userServer.signup(email, password);
+					SerializedFuture<Request> future = this.store.signup(email, password);
 					// Block until the Future object returns with a Request object
 					Request response = future.get(2, TimeUnit.SECONDS);
 					return response;
 				} 
 				else if (requestType.toLowerCase().equals("login")) {
 					// get the SerializedFuture object
-					Request response = this.userServer.login(email, password);
+					Request response = store.login(email, password);
 					return response;
 				} else {
 					logger.log(true, Level.SEVERE, "Invalid request! Imploding!!!");
@@ -237,7 +233,7 @@ public class UserInterface {
 	
 	// handle the shopping experience once a user is logged in
 	private void handleShopping() throws RemoteException {
-		this.shoppingCart = new ShoppingCart(inventoryServer, this.username);
+		this.shoppingCart = new ShoppingCart(store, this.username);
 
 		List<String> validCommands = new ArrayList<String>(Arrays.asList("add", "update", "remove", "empty-cart", "clear-cart", "checkout", "order-history" ));
 
@@ -394,21 +390,23 @@ public class UserInterface {
 				break;
 				
 			case "empty-cart":
-//				String response = shoppingCart.clearAll();
-//				logger.log(true, Level.INFO, "empty cart -> " + response);
+				response = shoppingCart.clearAll();
+				logger.log(true, Level.INFO, "empty cart -> " + response);
 				break;
 				
 			case "checkout":
-				// TODO - @TANUJ
+				Result result = store.createOrder(this.shoppingCart);
+				logger.log(true, Level.INFO, "Checkout successful -> " + result.getMessage() );
+				this.shoppingCart.clearAll();
 				break;
 				
 			case "order-history":
-				//todo: commented the following code by dhruv. needs fix
-//				List<ShoppingCart> orders = orderServer.getOrders(this.username);
-//				for (ShoppingCart s : orders) {
-//					s.printCart();
-//					System.out.println("---------------------------"); //
-//				}
+				Result result = store.getOrders(this.username);
+				List<ShoppingCart> orders = result.getShoppingCart();
+				for (ShoppingCart s : orders) {
+					s.printCart();
+					System.out.println("---------------------------"); //
+				}
 				break;
 	
 			}
