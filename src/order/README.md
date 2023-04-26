@@ -1,5 +1,6 @@
 # Order Service
  - Order service is used to place orders for the current user once the user has added the required products in the shopping cart.
+ - For the order service, we have a central coordinator for this project. All the clients of the order service connect with this central coordinator to have their requests processed. Once the coordinator gets the request it sends it to all the replicas(5 in our case) using Paxos.
 
 ## How to run order service?
    - Compile the order coordinator `javac order/CoordinatorStarter.java`
