@@ -1,5 +1,8 @@
 package order;
 
+import inventoryService.api.InventoryService;
+import userInterface.ShoppingCart;
+
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -14,6 +17,7 @@ import java.util.List;
  */
 public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCoordinator {
     List<PaxosServer> servers = new ArrayList<>();
+    InventoryService inventoryService;
     private Integer orderId = 0;
 
     /**
@@ -27,6 +31,19 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
         serverIPPorts.forEach((serverIPAndPort) -> {
             servers.add(getServerReference(serverIPAndPort.get(0), Integer.parseInt(serverIPAndPort.get(1))));
         });
+        inventoryService = getInventoryService();
+    }
+
+    private InventoryService getInventoryService() {
+        try {
+            Registry registry = LocateRegistry.getRegistry("localhost", 4000);
+            return  (InventoryService) registry.lookup("inventoryService-4000");
+        } catch (NotBoundException | RemoteException exception) {
+            System.out.println(Helper.logWithTimestamp("Not able to find reference for the inventory service"));
+        }
+        System.out.println("Returning null inventory service reference");
+
+        return null;
     }
 
     private PaxosServer getServerReference(String ip, int port) {
@@ -45,25 +62,24 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
 
     @Override
     public Boolean removeItem(Integer itemId, Integer stock) throws RemoteException {
-        // TODO: contact inventory service
+        inventoryService.updateProductStock(itemId, inventoryService.getProductStock(itemId) - stock);
         return true;
     }
 
     @Override
     public int inStock(Integer itemId) throws RemoteException {
-        // TODO: contact inventory service
-        return 100;
+        return inventoryService.getProductStock(itemId);
     }
 
     @Override
-    public Result createOrder(Integer userId, List<List<Integer>> itemIds) throws RemoteException {
+    public Result createOrder(ShoppingCart shoppingCart) throws RemoteException {
         this.orderId += 1;
-        return servers.get(0).createOrder(orderId, userId, itemIds);
+        return servers.get(0).createOrder(orderId, shoppingCart);
     }
 
     @Override
-    public Result getOrders(Integer userId) throws RemoteException {
-        return servers.get(0).getOrders(userId);
+    public Result getOrders(String username) throws RemoteException {
+        return servers.get(0).getOrders(username);
     }
 
     @Override
@@ -94,7 +110,7 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
 
         // phase 2
         if (promised < majority) {
-            return new Result(proposal.getOperation(), Collections.emptyList(), "consensus not reached");
+            return new Result(proposal.getOperation(), null, "consensus not reached");
         }
 
         for(PaxosServer acceptor: servers) {
@@ -117,7 +133,7 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
         }
 
         if (accepted < majority) {
-            return new Result(proposal.getOperation(), Collections.emptyList(), "consensus not reached");
+            return new Result(proposal.getOperation(), null, "consensus not reached");
         }
 
         Result res = null;

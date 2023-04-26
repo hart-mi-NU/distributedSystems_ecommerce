@@ -1,5 +1,7 @@
 package order;
 
+import userInterface.ShoppingCart;
+
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -16,7 +18,7 @@ public class OrderServerStarter {
             return;
         }
 
-        ConcurrentHashMap<Integer, List<List<List<Integer>>>> hashMap = new ConcurrentHashMap<>();
+        ConcurrentHashMap<Integer, ShoppingCart> hashMap = new ConcurrentHashMap<>();
 
         try {
             PaxosServer paxosServer = new OrderStoreManagerImpl(args[0], args[1], args[2], hashMap);

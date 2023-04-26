@@ -1,25 +1,27 @@
 package order;
 
+import userInterface.ShoppingCart;
+
 import java.io.Serializable;
 import java.util.List;
 
 public class Result                                                                                                                                                                                     implements Serializable {
     private String operation;
-    private List<List<Integer>> itemsInOrder;
+    private List<ShoppingCart> shoppingCart;
     private String message;
 
-    public Result(String operation, List<List<Integer>> itemsInOrder, String message) {
+    public Result(String operation, List<ShoppingCart> shoppingCart, String message) {
         this.operation = operation;
-        this.itemsInOrder = itemsInOrder;
+        this.shoppingCart = shoppingCart;
         this.message = message;
     }
 
-    public List<List<Integer>> getItemsInOrder() {
-        return itemsInOrder;
+    public List<ShoppingCart> getShoppingCart() {
+        return shoppingCart;
     }
 
-    public void setItemsInOrder(List<List<Integer>> itemsInOrder) {
-        this.itemsInOrder = itemsInOrder;
+    public void setShoppingCart(List<ShoppingCart> shoppingCart) {
+        this.shoppingCart = shoppingCart;
     }
 
     public String getOperation() {

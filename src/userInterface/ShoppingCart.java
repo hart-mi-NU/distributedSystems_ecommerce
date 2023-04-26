@@ -145,6 +145,8 @@ public class ShoppingCart {
 	public Double getTotal() {
 		return this.total;
 	}
+
+	public String getUsername() { return this.username; }
 	
 	// Print the cart contents to the terminal
 	public void printCart() {
