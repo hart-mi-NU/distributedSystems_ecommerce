@@ -1,5 +1,6 @@
 package userInterface;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import gateway.EcomInterface;
 import inventoryService.api.InventoryService;
 import inventoryService.dto.Product;
 
-public class ShoppingCart {
+public class ShoppingCart implements Serializable {
 
 	// quantity (value) for each product id (key)
 	Map<Integer, Integer> quantities;
@@ -60,7 +61,7 @@ public class ShoppingCart {
 			return "Invalid product id";
 		} else if (stock == 0) {
 			return "Unable to add to cart - item out of stock";
-		} else if ( quantity > stock) {
+		} else if ( quantity + this.quantities.get(productId) > stock ) {
 			return "Unable to add to cart - quantity exceeds available stock";
 		}
 
@@ -78,7 +79,7 @@ public class ShoppingCart {
 
 		// Update the subtotal for the product id
 		if (this.quantities.containsKey(productId)) {
-			Double priorSubtotal = this.subtotals.get(productId);
+			Double priorSubtotal = this.subtotals.getOrDefault(productId, 0d);
 			this.subtotals.put(productId, priorSubtotal + subtotal);
 		} else {
 			this.subtotals.put(productId, subtotal);
@@ -145,9 +146,22 @@ public class ShoppingCart {
 	public Double getTotal() {
 		return this.total;
 	}
+
+	public String getUsername() { return this.username; }
 	
 	// Print the cart contents to the terminal
 	public void printCart() {
-		// TODO
+		System.out.println("Cart:");
+		System.out.println("id	Name	Description		Rating	Qty	Price($)	Subtotal($)");
+		for (Integer id : this.quantities.keySet()) {
+			try {
+				Product p = store.getProduct(id);
+				System.out.println(String.format("%d\t %s\t %s\t\t %1.1f\t %d\t %2.2f\t %2.2f", p.getProductId(), p.getName(), p.getDescription(), p.getRating(), this.quantities.get(id), p.getPrice(), this.subtotals.get(id)));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(String.format("Total: $%2.2f", this.total));
+		System.out.println("--------------------------");
 	}
 }

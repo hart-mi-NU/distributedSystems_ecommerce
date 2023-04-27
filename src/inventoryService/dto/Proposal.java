@@ -50,4 +50,13 @@ public class Proposal implements Serializable {
     return proposal;
   }
 
+  @Override
+  public String toString() {
+    return "Proposal{" +
+            "proposalId=" + proposalId +
+            ", operation='" + operation + '\'' +
+            ", product=" + product +
+            ", quantity=" + quantity +
+            '}';
+  }
 }

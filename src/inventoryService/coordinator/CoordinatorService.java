@@ -1,9 +1,9 @@
 package inventoryService.coordinator;
 
-import java.net.MalformedURLException;
-import java.rmi.Naming;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -11,32 +11,36 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import inventoryService.api.InventoryService;
 import inventoryService.api.PaxosInterface;
 import inventoryService.dto.Promise;
 import inventoryService.dto.Proposal;
 import inventoryService.dto.Response;
 import inventoryService.server.InventoryServiceLogger;
 
-import static inventoryService.server.InventoryServiceApplication.host;
-
 
 public class CoordinatorService {
 
-  private final ExecutorService executor = Executors.newFixedThreadPool(5); //todo
+  private final ExecutorService executor = Executors.newFixedThreadPool(getInventoryServiceRegistry().size() + 1);
   private List<PaxosInterface> inventoryServiceAcceptors = new ArrayList<>();
-  private final int half = 1; //todo
+  private final int half = (getInventoryServiceRegistry().size() / 2);
+
+
+  private List<String> getInventoryServiceRegistry() {
+    List<String> servers = new ArrayList<>();
+    servers.add("inventoryService-4000");
+    servers.add("inventoryService-4001");
+    return servers;
+  }
 
   private void init(){
     try {
-      PaxosInterface service1 = (PaxosInterface) Naming.lookup("//"+host+"/inventoryService-4000");
-      PaxosInterface service2 = (PaxosInterface) Naming.lookup("//"+host+"/inventoryService-4001");
+      Registry rmiRegistry = LocateRegistry.getRegistry("localhost", 4000);
+      for(String serverName: getInventoryServiceRegistry()) {
+        PaxosInterface service = (PaxosInterface) rmiRegistry.lookup(serverName);
+        inventoryServiceAcceptors.add(service);
+      }
 
-      inventoryServiceAcceptors.add(service1);
-      inventoryServiceAcceptors.add(service2);
     } catch (NotBoundException e) {
-      e.printStackTrace();
-    } catch (MalformedURLException e) {
       e.printStackTrace();
     } catch (RemoteException e) {
       e.printStackTrace();
@@ -115,11 +119,15 @@ public class CoordinatorService {
       init();
     }
 
+    Response response = new Response();
+
     //stage-1: send proposal
     boolean prepareResult = sendPrepare(proposal);
     if(!prepareResult) {
+      response.setStatus("500");
+      response.setMessage("prepare failed");
       InventoryServiceLogger.error("Promise failed!");
-      return null; //todo: return error response
+      return response;
     }
 
     //Phase2: send accept
@@ -127,8 +135,9 @@ public class CoordinatorService {
     boolean acceptResult = sendAccept(proposal);
     if(!acceptResult) {
       InventoryServiceLogger.error("Accept failed!");
-      return null;
-      //todo: return error response
+      response.setStatus("500");
+      response.setMessage("Accept failed");
+      return response;
     }
 
     InventoryServiceLogger.info("Accept complete!!!");
@@ -136,6 +145,8 @@ public class CoordinatorService {
     //Phase3: send learn request
     InventoryServiceLogger.info("Sending learn requests");
     sendLearn(proposal);
-    return null; //todo: return success response
+    response.setStatus("200");
+    response.setMessage("operation completed successfully");
+    return response;
   }
 }

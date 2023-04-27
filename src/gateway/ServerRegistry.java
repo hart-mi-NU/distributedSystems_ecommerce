@@ -17,11 +17,11 @@ public class ServerRegistry {
   public static List<String> getOrderServiceRegistry() {
     //todo
     List<String> servers = new ArrayList<>();
-    servers.add("order-service1");
-    servers.add("order-service2");
-    servers.add("order-service3");
-    servers.add("order-service4");
-    servers.add("order-service5");
+    servers.add("order-coordinator");
+//    servers.add("order-service2");
+//    servers.add("order-service3");
+//    servers.add("order-service4");
+//    servers.add("order-service5");
     return servers;
   }
 
@@ -31,8 +31,8 @@ public class ServerRegistry {
     servers.add("userServer0");
     servers.add("userServer1");
     servers.add("userServer2");
-    servers.add("userServer3");
-    servers.add("userServer4");
+//    servers.add("userServer3");
+//    servers.add("userServer4");
 
     return servers;
   }

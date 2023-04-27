@@ -22,7 +22,7 @@ public class CoordinatorStarter {
         serverIPAndPorts.add(new ArrayList<>(Arrays.asList("localhost", "5002")));
         serverIPAndPorts.add(new ArrayList<>(Arrays.asList("localhost", "5003")));
         serverIPAndPorts.add(new ArrayList<>(Arrays.asList("localhost", "5004")));
-        serverIPAndPorts.add(new ArrayList<>(Arrays.asList("localhost", "8013")));
+        serverIPAndPorts.add(new ArrayList<>(Arrays.asList("localhost", "5005")));
 
 
         try {

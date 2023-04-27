@@ -8,12 +8,14 @@ import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
 import gateway.EcomInterface;
 import inventoryService.api.InventoryService;
+import inventoryService.dto.Product;
 import order.OrderCoordinator;
 import order.Result;
 import userService.MyLogger;
@@ -244,13 +246,17 @@ public class UserInterface {
 		Boolean isValidCommand;
 		while (true) {
 			// Print instructions
+			Map<Product, Integer> productQuantityMap = store.getProductAndInventory();
 			System.out.println("** The following items are available for sale: **");
 			System.out.println("id	Name	Description		Rating	Stock	Price ($)");
-			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
-			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
-			System.out.println("3	Banana	xxxxxxxxxxxxx		4.1	10	3.99");
-			System.out.println("4	Peach	xxxxxxxxxxxxx		3.5	10	4.99");
-			System.out.println("5	Pear	xxxxxxxxxxxxx		5.0	10	5.99");
+			for(Product key: productQuantityMap.keySet()) {
+				System.out.println(String.format("%d\t %s\t %s\t %1.1f\t %d\t %2.2f", key.getProductId(), key.getName(), key.getDescription(), key.getRating(), productQuantityMap.get(key), key.getPrice()));
+			}
+//			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
+//			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
+//			System.out.println("3	Banana	xxxxxxxxxxxxx		4.1	10	3.99");
+//			System.out.println("4	Peach	xxxxxxxxxxxxx		3.5	10	4.99");
+//			System.out.println("5	Pear	xxxxxxxxxxxxx		5.0	10	5.99");
 			System.out.println("\n** Available Commands: **");
 			System.out.println(" - \"add [id] [quantity]\"  --> Add a product to your shopping cart");
 			System.out.println(" - \"update [id] [quantity]\"  --> Update the quantity of product in your shopping cart");
@@ -297,6 +303,7 @@ public class UserInterface {
 			Integer productId;
 			Integer quantity;
 			String response;
+			Result result;
 			
 			// Switch statement on the first word in the wordlist
 			switch (wordList.get(0).toLowerCase()) {
@@ -395,14 +402,15 @@ public class UserInterface {
 				break;
 				
 			case "checkout":
-				Result result = store.createOrder(this.shoppingCart);
+				result = store.createOrder(this.shoppingCart);
 				logger.log(true, Level.INFO, "Checkout successful -> " + result.getMessage() );
 				this.shoppingCart.clearAll();
 				break;
 				
 			case "order-history":
-				Result result = store.getOrders(this.username);
+				result = store.getOrders(this.username);
 				List<ShoppingCart> orders = result.getShoppingCart();
+
 				for (ShoppingCart s : orders) {
 					s.printCart();
 					System.out.println("---------------------------"); //
