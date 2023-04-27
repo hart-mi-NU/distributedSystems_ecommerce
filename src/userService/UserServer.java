@@ -85,6 +85,7 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 		
 		// Instantiate the menu (key/value store)
 		this.userMap = new HashMap<String, String>();
+		userMap.put("dhruv", "dhar");
 	}
 
 
@@ -153,7 +154,7 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 			executor.execute(() -> {
 				Request request;
 				try {
-					request = result.get(2, TimeUnit.SECONDS);
+					request = result.get(5, TimeUnit.SECONDS);
 					future.complete(request);
 				} catch (InterruptedException | ExecutionException | TimeoutException e) {
 					e.printStackTrace();
@@ -319,20 +320,20 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 	// Main method
 	public static void main(String args[]) {
 		Scanner scanner = new Scanner(System.in);
-		Integer serverCount;
-		String input;
-		while (true) {
-			
-			System.out.println("How many servers would you like to create? Enter 3 or more");
-			input = scanner.nextLine();
-			if (isNumeric(input.trim()) && Integer.valueOf(input) >= 3) {
-				serverCount = Integer.valueOf(input);
-				scanner.close();
-				break;
-			} else {
-				System.out.println("Invalid input!");
-			}
-		}
+		Integer serverCount = 3;
+//		String input;
+//		while (true) {
+//
+//			System.out.println("How many servers would you like to create? Enter 3 or more");
+//			input = scanner.nextLine();
+//			if (isNumeric(input.trim()) && Integer.valueOf(input) >= 3) {
+//				serverCount = Integer.valueOf(input);
+//				scanner.close();
+//				break;
+//			} else {
+//				System.out.println("Invalid input!");
+//			}
+//		}
 		try {
 			for (int i =0; i<serverCount; i++) {
 				UserServer server = new UserServer(true, true, true, serverCount);
