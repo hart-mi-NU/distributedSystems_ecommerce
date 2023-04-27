@@ -297,6 +297,7 @@ public class UserInterface {
 			Integer productId;
 			Integer quantity;
 			String response;
+			Result result;
 			
 			// Switch statement on the first word in the wordlist
 			switch (wordList.get(0).toLowerCase()) {
@@ -395,13 +396,13 @@ public class UserInterface {
 				break;
 				
 			case "checkout":
-				Result result = store.createOrder(this.shoppingCart);
+				result = store.createOrder(this.shoppingCart);
 				logger.log(true, Level.INFO, "Checkout successful -> " + result.getMessage() );
 				this.shoppingCart.clearAll();
 				break;
 				
 			case "order-history":
-				Result result = store.getOrders(this.username);
+				result = store.getOrders(this.username);
 				List<ShoppingCart> orders = result.getShoppingCart();
 				for (ShoppingCart s : orders) {
 					s.printCart();
