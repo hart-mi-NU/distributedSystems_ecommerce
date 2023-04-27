@@ -194,11 +194,12 @@ public class OrderStoreManagerImpl extends
                 int quantityInStock = this.coordinator.inStock(itemId.get(0));
                 if(quantityInStock >= itemId.get(1) ) {
 //                    itemsInStock.add(itemId);
-                    this.coordinator.removeItem(itemId.get(0), itemId.get(1));
+//                    this.coordinator.removeItem(itemId.get(0), itemId.get(1));
+                    System.out.println(Helper.logWithTimestamp("Request quantity in stock"));
                 } else {
                     shoppingCart.update(itemId.get(0), quantityInStock);
 //                    itemsInStock.add(List.of(itemId.get(0), itemId.get(1) - quantityInStock));
-                    this.coordinator.removeItem(itemId.get(0), quantityInStock);
+//                    this.coordinator.removeItem(itemId.get(0), quantityInStock);
                 }
             }
 //            valueToStore.add(itemsInStock);

@@ -146,6 +146,13 @@ public class OrderCoordinatorImpl extends UnicastRemoteObject implements OrderCo
                 System.out.println(Helper.logWithTimestamp("A server did not respond to proposal at learn stage " + proposal.toString()+ e.toString()));
             }
         }
+        if (res!=null && res.getOperation().equals("createOrder") && res.getShoppingCart() != null) {
+            List<List<Integer>> itemIdsToAdd = res.getShoppingCart().get(0).getQuantities();
+
+            for(List<Integer> itemId: itemIdsToAdd) {
+                removeItem(itemId.get(0), itemId.get(1));
+            }
+        }
 
         return res;
     }
