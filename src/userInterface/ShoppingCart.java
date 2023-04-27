@@ -151,6 +151,15 @@ public class ShoppingCart implements Serializable {
 	
 	// Print the cart contents to the terminal
 	public void printCart() {
-		// TODO
+		System.out.println("Cart:");
+		System.out.println("id	Name	Description		Rating	Stock	Price ($)	Subtotal($)");
+		for (Integer id : this.quantities.keySet()) {
+			try {
+				Product p = store.getProduct(id);
+				System.out.println(String.format("%d\t %s\t %s\t %1.1f\t %d\t %2.2f\t %2.2f", p.getProductId(), p.getName(), p.getDescription(), p.getRating(), this.quantities.get(p), p.getPrice(), this.subtotals.get(id)));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

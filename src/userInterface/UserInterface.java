@@ -250,7 +250,7 @@ public class UserInterface {
 			System.out.println("** The following items are available for sale: **");
 			System.out.println("id	Name	Description		Rating	Stock	Price ($)");
 			for(Product key: productQuantityMap.keySet()) {
-				System.out.println(String.format("%d\t %s\t %s\t %f\t %d\t %f", key.getProductId(), key.getName(), key.getDescription(), key.getRating(), productQuantityMap.get(key), key.getPrice()));
+				System.out.println(String.format("%d\t %s\t %s\t %1.1f\t %d\t %2.2f", key.getProductId(), key.getName(), key.getDescription(), key.getRating(), productQuantityMap.get(key), key.getPrice()));
 			}
 //			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
 //			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
@@ -408,13 +408,9 @@ public class UserInterface {
 				break;
 				
 			case "order-history":
-<<<<<<< HEAD
 				result = store.getOrders(this.username);
 				List<ShoppingCart> orders = result.getShoppingCart();
-=======
-				Result getOrderResult = store.getOrders(this.username);
-				List<ShoppingCart> orders = getOrderResult.getShoppingCart();
->>>>>>> 7876c31e1e3779a48c6a06ca7c3560f21afb24ca
+
 				for (ShoppingCart s : orders) {
 					s.printCart();
 					System.out.println("---------------------------"); //
