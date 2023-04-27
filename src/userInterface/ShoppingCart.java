@@ -1,5 +1,6 @@
 package userInterface;
 
+import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import gateway.EcomInterface;
 import inventoryService.api.InventoryService;
 import inventoryService.dto.Product;
 
-public class ShoppingCart {
+public class ShoppingCart implements Serializable {
 
 	// quantity (value) for each product id (key)
 	Map<Integer, Integer> quantities;
@@ -78,7 +79,7 @@ public class ShoppingCart {
 
 		// Update the subtotal for the product id
 		if (this.quantities.containsKey(productId)) {
-			Double priorSubtotal = this.subtotals.get(productId);
+			Double priorSubtotal = this.subtotals.getOrDefault(productId, 0d);
 			this.subtotals.put(productId, priorSubtotal + subtotal);
 		} else {
 			this.subtotals.put(productId, subtotal);

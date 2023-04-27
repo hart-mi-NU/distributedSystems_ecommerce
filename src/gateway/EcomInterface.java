@@ -22,7 +22,7 @@ public interface EcomInterface extends Remote {
 	Integer getProductStock(Integer productId) throws RemoteException;
 	Map<Product, Integer> getProductAndInventory() throws RemoteException;
 	Product getProduct(Integer productId) throws RemoteException;
-	void addProduct(Product product) throws RemoteException; // Mike: do we need this in the gateway??
+	void updateProductStock(int productId, int stockVal) throws RemoteException;
   
 	
 	// ORDER SERVER
