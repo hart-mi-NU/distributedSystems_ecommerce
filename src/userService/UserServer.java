@@ -254,15 +254,6 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 	}
 
 
-//	// used by this server's learner to update the menu
-//	@Override
-//	public synchronized void updateMenu(Request request) throws RemoteException {
-//		if (request.getType().toLowerCase().equals("put")) {
-//			this.menu.put(request.getKey().trim().toLowerCase(), request.getValue());
-//		} else if (request.getType().toLowerCase().equals("delete")) {
-//			this.menu.remove(request.getKey().trim().toLowerCase());
-//		}
-//	}
 	
 	// Increment the proposer Id from X.0 to X.9 (and then begin at X.0). There can be max 10 proposer threads active at one time
 	private void incrementProposerId() {

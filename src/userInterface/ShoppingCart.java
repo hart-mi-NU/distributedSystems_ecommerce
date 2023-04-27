@@ -61,7 +61,7 @@ public class ShoppingCart implements Serializable {
 			return "Invalid product id";
 		} else if (stock == 0) {
 			return "Unable to add to cart - item out of stock";
-		} else if ( quantity > stock) {
+		} else if ( quantity + this.quantities.get(productId) > stock ) {
 			return "Unable to add to cart - quantity exceeds available stock";
 		}
 
@@ -151,6 +151,17 @@ public class ShoppingCart implements Serializable {
 	
 	// Print the cart contents to the terminal
 	public void printCart() {
-		// TODO
+		System.out.println("Cart:");
+		System.out.println("id	Name	Description		Rating	Qty	Price($)	Subtotal($)");
+		for (Integer id : this.quantities.keySet()) {
+			try {
+				Product p = store.getProduct(id);
+				System.out.println(String.format("%d\t %s\t %s\t\t %1.1f\t %d\t %2.2f\t %2.2f", p.getProductId(), p.getName(), p.getDescription(), p.getRating(), this.quantities.get(id), p.getPrice(), this.subtotals.get(id)));
+			} catch (RemoteException e) {
+				e.printStackTrace();
+			}
+		}
+		System.out.println(String.format("Total: $%2.2f", this.total));
+		System.out.println("--------------------------");
 	}
 }

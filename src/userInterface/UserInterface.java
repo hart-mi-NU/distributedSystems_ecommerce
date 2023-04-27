@@ -250,7 +250,7 @@ public class UserInterface {
 			System.out.println("** The following items are available for sale: **");
 			System.out.println("id	Name	Description		Rating	Stock	Price ($)");
 			for(Product key: productQuantityMap.keySet()) {
-				System.out.println(String.format("%d\t %s\t %s\t %f\t %d\t %f", key.getProductId(), key.getName(), key.getDescription(), key.getRating(), productQuantityMap.get(key), key.getPrice()));
+				System.out.println(String.format("%d\t %s\t %s\t %1.1f\t %d\t %2.2f", key.getProductId(), key.getName(), key.getDescription(), key.getRating(), productQuantityMap.get(key), key.getPrice()));
 			}
 //			System.out.println("1	Apple	xxxxxxxxxxxxx		4.2	10	1.99");
 //			System.out.println("2	Orange	xxxxxxxxxxxxx		4.8	10	2.99");
@@ -303,6 +303,7 @@ public class UserInterface {
 			Integer productId;
 			Integer quantity;
 			String response;
+			Result result;
 			
 			// Switch statement on the first word in the wordlist
 			switch (wordList.get(0).toLowerCase()) {
@@ -401,14 +402,15 @@ public class UserInterface {
 				break;
 				
 			case "checkout":
-				Result result = store.createOrder(this.shoppingCart);
+				result = store.createOrder(this.shoppingCart);
 				logger.log(true, Level.INFO, "Checkout successful -> " + result.getMessage() );
 				this.shoppingCart.clearAll();
 				break;
 				
 			case "order-history":
-				Result getOrderResult = store.getOrders(this.username);
-				List<ShoppingCart> orders = getOrderResult.getShoppingCart();
+				result = store.getOrders(this.username);
+				List<ShoppingCart> orders = result.getShoppingCart();
+
 				for (ShoppingCart s : orders) {
 					s.printCart();
 					System.out.println("---------------------------"); //
