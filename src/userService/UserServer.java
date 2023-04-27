@@ -31,7 +31,7 @@ public class UserServer extends UnicastRemoteObject implements UserServerInterfa
 	private Integer serverId;
 	private HashMap<String, String> userMap;
 	private ExecutorService executor;
-	private Double proposerId; // TODO - between 0 and 10... create method to increment this. max 10 proposer threads at one time
+	private Double proposerId; 
 	
 	
 	public UserServer(boolean isProposer, boolean isAcceptor, boolean isLearner, Integer serverCount) throws RemoteException {

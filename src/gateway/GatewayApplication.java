@@ -25,7 +25,7 @@ public class GatewayApplication extends EcomInterfaceImpl {
   }
 
   public static void main(String[] args) throws RemoteException, MalformedURLException, NotBoundException {
-    host = args[0];
+//    host = args[0];
     new GatewayApplication();
   }
 }

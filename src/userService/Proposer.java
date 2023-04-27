@@ -33,7 +33,7 @@ public class Proposer extends UnicastRemoteObject implements Callable<Request>, 
 		this.request = request;
 		this.serverId = serverId;
 		this.uniqueId = (double) uniqueId +  ((double) serverId/10.0) + ((double)proposerId/100.0);
-		this.registry = LocateRegistry.getRegistry(8013);
+		this.registry = LocateRegistry.getRegistry(4000);
 		this.logger = logger;
 		this.nackCount = 0;
 		this.promiseCount = 0;
@@ -67,7 +67,7 @@ public class Proposer extends UnicastRemoteObject implements Callable<Request>, 
 			logger.log(true, Level.INFO, "proposer" + this.proposerId.toString() + "sending prepare to acceptors");
 			this.nackCount = 0;
 			this.promiseCount = 0;
-			sendMessageToAcceptors("prepare"); // will the timing ruin this?
+			sendMessageToAcceptors("prepare"); 
 			while (true) {
 				PaxosMessage message = messageQueue.take();
 				consensus = processMessage("promise", message);
@@ -139,12 +139,15 @@ public class Proposer extends UnicastRemoteObject implements Callable<Request>, 
 	// Send promise message to all acceptors
 	private void sendMessageToAcceptors(String messageType) {
 		PaxosMessage msg = new PaxosMessage(messageType, this.uniqueId, this.request, this.proposerId);
-    	for (int i=0; i<30; i++) {
+    	for (int i=0; i<this.serverCount; i++) {
     		try {
+    			System.out.println("Sending message to acceptor" + i);
 				AcceptorInterface a = (AcceptorInterface) registry.lookup("acceptor" + i);
 				a.receiveMessage(msg);
 				
 			} catch (RemoteException | NotBoundException e) {
+				System.out.println("ERROR");
+				e.printStackTrace();
 				continue;
 			}
 		}
