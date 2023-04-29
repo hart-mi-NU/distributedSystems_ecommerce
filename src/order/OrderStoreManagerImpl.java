@@ -105,11 +105,6 @@ public class OrderStoreManagerImpl extends
     public Promise promise(Proposal proposal) throws RemoteException {
         System.out.println(Helper.logWithTimestamp("Received a promise message for proposal: " + proposal));
 
-        if (Math.random() <= 0.01) {
-            Helper.logWithTimestamp("Server randomly failed");
-            return null;
-        }
-
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         FutureTask<Promise> futureTask = new FutureTask<>(new Callable<Promise>() {
             @Override
@@ -141,11 +136,6 @@ public class OrderStoreManagerImpl extends
     @Override
     public Boolean accept(Proposal proposal) throws RemoteException {
         System.out.println(Helper.logWithTimestamp("Received a accept message for proposal: " + proposal));
-
-        if (Math.random() <= 0.01) {
-            Helper.logWithTimestamp("Server randomly failed");
-            return false;
-        }
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
         FutureTask<Boolean> futureTask = new FutureTask<>(new Callable<Boolean>() {
